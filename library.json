@@ -1,0 +1,19 @@
+{
+  "name": "Magellan_BC95",
+  "frameworks": "Arduino",
+  "keywords": "AIS, NB-IoT, BC95, Magellan, Quectel",
+  "description": "Arduino Library for AIS Magellan",
+  "url": "https://github.com/AIS-DeviceInnovation/Magellan_BC95",
+  "authors":
+  {
+    "name": "AIS IoT Alliance Program",
+    "maintainer": true
+  },
+  "repository":
+  {
+      "type": "git",
+      "url": "https://github.com/AIS-DeviceInnovation/Magellan_BC95.git"
+  }, 
+  "version": "1.0.1",
+  "platforms": "*"
+}
