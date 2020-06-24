@@ -59,7 +59,6 @@ public:
 	String getIMEI();
 	String getICCID();
 	void pingIP(String IP);
-	void powerSavingMode(unsigned int psm);
 	bool checkPSMmode();
 
 	void sendMsgHEX(String address,String desport,String payload);
