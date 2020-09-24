@@ -33,7 +33,7 @@ NB-IoT with AT command
  
 Author: Device Innovation team     
 Create Date: 3 February 2020. 
-Modified: 12 May 2020.
+Modified: 22 July 2020.
 
 Released for private usage.
 */
@@ -58,8 +58,10 @@ public:
 	String getIMSI();
 	String getIMEI();
 	String getICCID();
+	radio getRadioStat();
+	dateTime getClock(unsigned int timezone=7);
 	void pingIP(String IP);
-	bool checkPSMmode();
+	// bool checkPSMmode();
 
 	void sendMsgHEX(String address,String desport,String payload);
 	void sendMsgSTR(String address,String desport,String payload);	

@@ -33,7 +33,7 @@ NB-IoT with AT command
 
 Author: Device Innovation team  
 Create Date: 2 January 2020. 
-Modified: 27 May 2020.
+Modified: 23 July 2020.
 */
 #include "AT_BC95.h"  
 #include "board.h"
@@ -531,23 +531,53 @@ String AT_BC95::getNetworkStatus(){
   return(out);
 }
 
-bool AT_BC95::checkPSMmode(){
-  bool status = false;
-  _Serial->println(F("AT+CPSMS?"));
+// Get radio stat.
+radio AT_BC95::getRadioStat(){
+  radio value;
+  _Serial->println(F("AT+NUESTATS"));
   while(1){
     if(_Serial->available()){
-      data_input=_Serial->readStringUntil('\n');
-      if(data_input.indexOf(F("+CPSMS:"))!=-1){
-        if(data_input.indexOf(F("1"))!=-1) status = true;
-        else status = false;
-      }
+      data_input = _Serial->readStringUntil('\n');
       if(data_input.indexOf(F("OK"))!=-1){
         break;
       }
+      else{
+        if(data_input.indexOf(F("PCI"))!=-1){
+          int start_index = data_input.indexOf(F(":"));
+          int stop_index  = data_input.indexOf(F("\n"));
+          value.pci = data_input.substring(start_index+1,stop_index);
+        }
+        if(data_input.indexOf(F("RSRQ"))!=-1){
+          int start_index = data_input.indexOf(F(":"));
+          int stop_index  = data_input.indexOf(F("\n"));
+          value.rsrq = data_input.substring(start_index+1,stop_index);
+          value.rsrq = String(value.rsrq.toInt()/10);
+        }
+      }
     }
   }
-  return status;
+  value.pci.trim();
+  value.rsrq.trim();
+  return value;
 }
+
+// bool AT_BC95::checkPSMmode(){
+//   bool status = false;
+//   _Serial->println(F("AT+CPSMS?"));
+//   while(1){
+//     if(_Serial->available()){
+//       data_input=_Serial->readStringUntil('\n');
+//       if(data_input.indexOf(F("+CPSMS:"))!=-1){
+//         if(data_input.indexOf(F("1"))!=-1) status = true;
+//         else status = false;
+//       }
+//       if(data_input.indexOf(F("OK"))!=-1){
+//         break;
+//       }
+//     }
+//   }
+//   return status;
+// }
 
 /****************************************/
 /**          Send UDP Message          **/
@@ -707,4 +737,66 @@ void AT_BC95::_serial_flush(){
     }
   }
   _Serial->flush();
+}
+
+dateTime AT_BC95::getClock(unsigned int timezone){
+  dateTime dateTime;
+  _Serial->println(F("AT+CCLK?"));
+  while(1){
+    if(_Serial->available()){
+      data_input=_Serial->readStringUntil('\n');
+      if(data_input.indexOf(F("+CCLK:"))!=-1){
+        byte index = data_input.indexOf(F(":"));
+        byte index2 = data_input.indexOf(F(","),index+1);
+        byte index3 = data_input.indexOf(F("+"),index2+1);
+        dateTime.date = data_input.substring(index+1,index2);         //YY/MM/DD
+        dateTime.time = data_input.substring(index2+1,index3);        //GMT time without adding timezone
+      }
+      if(data_input.indexOf(F("OK"))!=-1){
+        break;
+      }
+    }
+  }
+  if(dateTime.time!="" && dateTime.date!=""){
+    byte index = dateTime.date.indexOf(F("/"));
+    byte index2 = dateTime.date.indexOf(F("/"),index+1);
+    unsigned int yy = ("20"+dateTime.date.substring(0,index)).toInt();
+    unsigned int mm = dateTime.date.substring(index+1,index2).toInt();
+    unsigned int dd = dateTime.date.substring(index2+1,dateTime.date.length()).toInt();
+
+    index = dateTime.time.indexOf(F(":"));
+    unsigned int hr = dateTime.time.substring(0,index).toInt()+timezone;
+
+    if(hr>=24){
+      hr-=24;
+      //date+1
+      dd+=1;
+      if(mm==2){
+        if((yy % 4 == 0 && yy % 100 != 0 || yy % 400 == 0)){
+          if (dd>29) {
+            dd==1;
+            mm+=1;
+          }
+        }
+        else if(dd>28){ 
+          dd==1;
+          mm+=1;
+        }
+      }
+      else if((mm==1||mm==3||mm==5||mm==7||mm==8||mm==10||mm==12)&&dd>31){
+        dd==1;
+        mm+=1;
+      }
+      else if(dd>30){
+        dd==1;
+        mm+=1;
+      }
+    }
+    dateTime.time = String(hr)+dateTime.time.substring(index,dateTime.time.length());
+    dateTime.date = String(dd)+"/"+String(mm)+"/"+String(yy);
+
+    dateTime.time.trim();
+    dateTime.date.trim();
+  }
+  return dateTime;
 }

@@ -33,7 +33,7 @@ NB-IoT with AT command
 
 Author: Device Innovation team  
 Create Date: 2 January 2020. 
-Modified: 12 May 2020.
+Modified: 22 July 2020.
 */
 
 #include <Arduino.h>
@@ -52,6 +52,16 @@ struct signal{
 	String ber;
 };
 
+struct radio{
+	String pci="";
+	String rsrq="";
+};
+
+struct dateTime{
+	String date="";
+	String time="";
+};
+
 typedef void (*MQTTClientCallback)(String &topic, String &payload);
 typedef void (*reponseCallback)(String &datax);
 
@@ -63,23 +73,26 @@ public:
 	const unsigned int msgLenMul=1;
 	//=========Initialization Module=======
 	void setupModule(String port="",String address="");
-	void check_module_ready();	
+	void check_module_ready();
 	void reboot_module();
 	pingRESP pingIP(String IP);
 	bool closeUDPSocket();
 	bool checkNetworkConnection();
 	bool attachNetwork();
-	void powerSavingMode(unsigned int psm);
+	
 	//==========Get Parameter Value=========
 	String getFirmwareVersion();
 	String getIMEI();
 	String getICCID();
 	String getIMSI();
 	String getDeviceIP();
-	String getSignal();    
+	String getSignal();
 	String getAPN();
 	String getNetworkStatus();
-	bool checkPSMmode();
+	radio getRadioStat();
+	dateTime getClock(unsigned int timezone);
+	
+	// bool checkPSMmode();
 	//==========Data send/rec.===============
 	void waitResponse(String &retdata,String server);
 	void _Serial_print(String address,String port,unsigned int len);
