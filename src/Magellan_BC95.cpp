@@ -27,7 +27,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Magellan_BC95 v1.0.1 NB-IoT Magellan Platform .
+Magellan_BC95 v1.1.0 NB-IoT Magellan Platform .
 Quectel BC95
 NB-IoT with AT command
 
@@ -42,7 +42,7 @@ and supported only Magellan IoT Platform
  
 Author: Device Innovation team     
 Create Date: 3 February 2020. 
-Modified: 2 June 2020.
+Modified: 22 July 2020.
 
 Released for private usage.
 */
@@ -312,7 +312,7 @@ bool Magellan_BC95::begin(){
   token_error_report=true;
   token_error_config=true;
   Serial.println();
-  Serial.println(F("               AIS NB-IoT Magellan_BC95 V1.0.1"));
+  Serial.println(F("               AIS NB-IoT Magellan_BC95 V1.1.0"));
 
   atbc95.setupModule(serverIP,port);
 
@@ -1144,6 +1144,14 @@ String Magellan_BC95::getSignal(){
 
 pingRESP Magellan_BC95::pingIP(String IP){
   return atbc95.pingIP(IP);
+}
+
+radio Magellan_BC95::getRadioStat(){
+  return atbc95.getRadioStat();
+}
+
+dateTime Magellan_BC95::getClock(unsigned int timezone){
+  return atbc95.getClock(timezone);
 }
 
 void Magellan_BC95::printErrCode(String errcode){
