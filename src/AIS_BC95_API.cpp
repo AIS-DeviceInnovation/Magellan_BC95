@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AIS_BC95_API v1.0.1 NB-IoT.
+AIS_BC95_API v1.1.0 NB-IoT.
 support Quectel BC95
 NB-IoT with AT command
  
 Author: Device Innovation team     
 Create Date: 3 February 2020. 
-Modified: 5 June 2020.
+Modified: 22 July 2020.
 
 Released for private usage.
 */
@@ -139,4 +139,15 @@ String AIS_BC95_API::getIMEI(){
 	return at_bc95.getIMEI();
 }
 
+radio AIS_BC95_API::getRadioStat(){
+  return at_bc95.getRadioStat();
+}
+
+dateTime AIS_BC95_API::getClock(unsigned int timezone){
+  return at_bc95.getClock(timezone);
+}
+
+// bool AIS_BC95_API::checkPSMmode(){
+//   return at_bc95.checkPSMmode();
+// }
 
