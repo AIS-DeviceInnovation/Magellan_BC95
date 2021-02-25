@@ -10,7 +10,7 @@ String desport = "";    // Your Server Port
 String payload = "Hello World";
 String data_return;
 unsigned long previousMillis = 0;
-const long interval = 4000;  //millisecond
+const long interval = 20000;  //millisecond
 long cnt=0;
 
 

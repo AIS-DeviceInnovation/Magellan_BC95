@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AT Command Dictionary for Quectel BC95 version 1.0.1
+AT Command Dictionary for Quectel BC95 version 1.0.2
 support Quectel BC95
 NB-IoT with AT command
 
 Author: Device Innovation team  
 Create Date: 2 January 2020. 
-Modified: 23 July 2020.
+Modified: 18 February 2021.
 */
 #include "AT_BC95.h"  
 #include "board.h"
@@ -88,7 +88,6 @@ void AT_BC95::setupModule(String address,String port){
     Serial.print(getSignal()); 
     Serial.println(F(" dBm")); 
 
-
     delay(800);
     _serial_flush();
     Serial.print(F(">>Connecting "));
@@ -109,6 +108,12 @@ void AT_BC95::setupModule(String address,String port){
       delay(200);
       __asm__ __volatile__ ("jmp 0x0000");
     }
+
+    if(debug){
+        Serial.print(F(">>APN   : "));
+        Serial.println(getAPN());
+    }
+
     previous=millis();
   }
 }
@@ -264,6 +269,9 @@ bool AT_BC95::createUDPSocket(String address,String port){
       if(data_input.indexOf(F("OK"))!=-1){
         status=true;
         break;
+      }else if(data_input.indexOf(F("+CME ERROR: 4"))!=-1){
+      	_Serial->print(F("AT+NSOCR=DGRAM,17,"));
+  		_Serial->println(port+",1");
       }
       Serial.print(F("."));
     }
@@ -316,10 +324,16 @@ pingRESP AT_BC95::pingIP(String IP){
     pingr.addr = data.substring(index+1,index2);
     pingr.ttl = data.substring(index2+1,index3);
     pingr.rtt = data.substring(index3+1,data.length()-1);
-    Serial.println(">>Ping IP : "+pingr.addr + ", ttl= " + pingr.ttl + ", rtt= " + pingr.rtt);
-  }else { Serial.println(">>Ping Failed");}
+  }else { 
+    Serial.println(">>Ping Failed");
+  }
+  blankChk(pingr.addr);
+  blankChk(pingr.ttl);
+  blankChk(pingr.rtt);
+  if(data!="") Serial.println(">>Ping IP : "+pingr.addr + ", ttl= " + pingr.ttl + ", rtt= " + pingr.rtt);  
   _serial_flush();
   data_input="";
+  
 return pingr;
 }
 
@@ -339,8 +353,7 @@ String AT_BC95::getIMSI(){
   }
   imsi.replace(F("OK"),"");  
   imsi.trim();
-  //Serial.print(F(">>IMSI : "));
-  //Serial.println(imsi); 
+  blankChk(imsi); 
   return imsi;
 }
 
@@ -357,8 +370,7 @@ String AT_BC95::getICCID(){
   iccid.replace(F("OK"),"");
   iccid.replace(F("+NCCID:"),"");
   iccid.trim();
-  //Serial.print(F(">>ICCID : "));
-  //Serial.println(iccid); 
+  blankChk(iccid); 
   return iccid;
 }
 
@@ -375,8 +387,7 @@ String AT_BC95::getIMEI(){
       else if(data_input.indexOf(F("OK"))!=-1 && imei!="") break;
     }
   }
-  //Serial.print(F(">>IMEI : "));
-  //Serial.println(imei);
+  blankChk(imei);
   return imei;
 }
 
@@ -427,23 +438,18 @@ String AT_BC95::getSignal(){
             int start_index = data_input.indexOf(F(":"));
             int stop_index  = data_input.indexOf(F(","));
             data_csq = data_input.substring(start_index+1,stop_index);
-            if (data_csq == "99" && count > 10){
-              data_csq = "N/A";
-            }
-            else{
-              rssi = data_csq.toInt();
-              rssi = (2*rssi)-113;
-              data_csq = String(rssi);
-            }
+
+            rssi = data_csq.toInt();
+            rssi = (2*rssi)-113;
+            data_csq = String(rssi);
           }
         }
       }
     }
-  if(rssi==-113 || data_csq=="N/A" || rssi==85)count++;
+  if(rssi==-113 || rssi==85)count++;
   delay(1000);
   }while(rssi==-113&&count<=10 || rssi==85&&count<=10);
-  if(rssi==-113)
-  {
+  if(rssi==-113 || rssi==85){
     data_csq = "-113";
     count= 0;
   }
@@ -466,6 +472,7 @@ String AT_BC95:: getAPN(){
         index = data_input.indexOf(F(","),index2+1);
         index2 = data_input.indexOf(F(","),index+1);
         out = data_input.substring(index+2,index2-1);
+        if(out==",,") out="";
       }
       if(data_input.indexOf(F("OK"))!=-1){
         break;
@@ -474,12 +481,13 @@ String AT_BC95:: getAPN(){
   }
   _serial_flush();
   data_input="";
+  blankChk(out);
   return out;
 }
 
 String AT_BC95::getFirmwareVersion(){
   String fw="";
-  _Serial->println(F("AT+CGMM"));
+  _Serial->println(F("AT+CGMR"));
   while(1){
     if(_Serial->available()){
       data_input=_Serial->readStringUntil('\n');
@@ -489,8 +497,7 @@ String AT_BC95::getFirmwareVersion(){
   }
   fw.replace(F("OK"),"");
   fw.trim();
-  //Serial.print(F(">>FW Ver: "));
-  //Serial.println(fw); 
+  blankChk(fw); 
   return fw;
 }
 
@@ -558,7 +565,15 @@ radio AT_BC95::getRadioStat(){
   }
   value.pci.trim();
   value.rsrq.trim();
+  blankChk(value.pci);
+  blankChk(value.rsrq);
   return value;
+}
+
+void AT_BC95::blankChk(String& val){
+  if(val==""){
+    val = "N/A";
+  }
 }
 
 // bool AT_BC95::checkPSMmode(){
@@ -641,6 +656,7 @@ void AT_BC95:: waitResponse(String &retdata,String server){
   if (end){
     manageResponse(retdata,server);
     end=false;
+    data_input=F("");
   }
   
 }
@@ -798,5 +814,9 @@ dateTime AT_BC95::getClock(unsigned int timezone){
     dateTime.time.trim();
     dateTime.date.trim();
   }
+
+  blankChk(dateTime.time);
+  blankChk(dateTime.date);
+
   return dateTime;
 }
