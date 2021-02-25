@@ -354,8 +354,6 @@ String AT_BC95::getIMSI(){
   imsi.replace(F("OK"),"");  
   imsi.trim();
   blankChk(imsi); 
-  //Serial.print(F(">>IMSI : "));
-  //Serial.println(imsi); 
   return imsi;
 }
 
@@ -372,8 +370,6 @@ String AT_BC95::getICCID(){
   iccid.replace(F("OK"),"");
   iccid.replace(F("+NCCID:"),"");
   iccid.trim();
-  //Serial.print(F(">>ICCID : "));
-  //Serial.println(iccid);
   blankChk(iccid); 
   return iccid;
 }
@@ -391,8 +387,6 @@ String AT_BC95::getIMEI(){
       else if(data_input.indexOf(F("OK"))!=-1 && imei!="") break;
     }
   }
-  //Serial.print(F(">>IMEI : "));
-  //Serial.println(imei);
   blankChk(imei);
   return imei;
 }
@@ -503,9 +497,7 @@ String AT_BC95::getFirmwareVersion(){
   }
   fw.replace(F("OK"),"");
   fw.trim();
-  blankChk(fw);
-  //Serial.print(F(">>FW Ver: "));
-  //Serial.println(fw); 
+  blankChk(fw); 
   return fw;
 }
 
