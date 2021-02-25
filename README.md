@@ -1,5 +1,5 @@
 
-![Library Version](https://img.shields.io/badge/Version-1.1.0-green)
+![Library Version](https://img.shields.io/badge/Version-1.1.1-green)
 
 # AIS Library
 
@@ -57,19 +57,19 @@ magel.report(payload);
 Please the location payload data as below format.\
 **Example**
 ```cpp
-payload={"Location":"Latitude,Longitude"}
+payload="{\"Location\":"Latitude,Longitude"}";
 ```
 Show battery on dashboard\
 Battery is range in 0-100 %.\
 **Example**
 ```cpp
-payload={"Battery":100}   
+payload="{\"Battery\":100}";   
 ```
 Show Lamp status on dashbord\
 please use 0 or 1 to send status\
 **Example**
 ```cpp
-payload={"Lamp":0} 
-payload={"Lamp":1}
+payload="{\"Lamp\":0}"; 
+payload="{\"Lamp\":1}";
 ```
 **Note** please see more in the example code 
