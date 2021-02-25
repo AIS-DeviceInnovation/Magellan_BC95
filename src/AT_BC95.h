@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AT Command Dictionary for Quectel BC95 version 1.0.0
+AT Command Dictionary for Quectel BC95 version 1.0.2
 support Quectel BC95
 NB-IoT with AT command
 
 Author: Device Innovation team  
 Create Date: 2 January 2020. 
-Modified: 22 July 2020.
+Modified: 18 February 2021.
 */
 
 #include <Arduino.h>
@@ -123,6 +123,7 @@ private:
 	bool createUDPSocket(String address,String port);
 	void manageResponse(String &retdata,String server);
 	void at_getBuffer(String socket,String nBuffer);
+	void blankChk(String& val);
 
 protected:
 	Stream *_Serial;	
