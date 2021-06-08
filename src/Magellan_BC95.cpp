@@ -27,8 +27,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Magellan_BC95 v1.1.1 NB-IoT Magellan Platform .
-Quectel BC95
+Magellan_BC95 v1.1.2 NB-IoT Magellan Platform .
+support Quectel BC95
 NB-IoT with AT command
 
 Library/SDK has developed with CoAP protocol. 
@@ -42,14 +42,14 @@ and supported only Magellan IoT Platform
  
 Author: Device Innovation team     
 Create Date: 3 February 2020. 
-Modified: 18 February 2021.
+Modified: 31 May 2021.
 
 Released for private usage.
 */
 
 #include "Magellan_BC95.h"
 
-AT_BC95 atbc95;
+AT_BC95 atBC95;
 
 String serverIP = "119.31.104.1";      
 String port = "5683";                       
@@ -101,6 +101,7 @@ String Magellan_BC95::thingsRegister()
     int indexst=imsi.indexOf(F("52003"));
     imsi=imsi.substring(indexst,16);
   }
+
   stropt[3]=imsi;
   
   coapoption[3].stroption=stropt[3];
@@ -307,24 +308,24 @@ String Magellan_BC95::getControl(String Resource,unsigned int qos)
 
 bool Magellan_BC95::begin(){
   //bool created=true;
-  if(debug) atbc95.debug=true;
+  if(debug) atBC95.debug=true;
   bool created=false;  
   token_error_report=true;
   token_error_config=true;
   Serial.println();
-  Serial.println(F("               AIS NB-IoT Magellan_BC95 V1.1.1"));
+  Serial.println(F("               AIS NB-IoT Magellan_BC95 V1.1.2"));
 
-  atbc95.setupModule(serverIP,port);
+  atBC95.setupModule(serverIP,port);
 
   imsi.reserve(15);
-  imsi = atbc95.getIMSI();
+  imsi = atBC95.getIMSI();
 
   iccid.reserve(19);
-  iccid = atbc95.getICCID();
+  iccid = atBC95.getICCID();
 
-  atbc95.getIMEI();
+  atBC95.getIMEI();
 
-  deviceIP = atbc95.getDeviceIP();
+  deviceIP = atBC95.getDeviceIP();
 
   while(true)
   {
@@ -352,7 +353,7 @@ void Magellan_BC95::printHEX(char *str){
     flag=itoa((int)*hstr,out,16);
     
     if(flag){
-      atbc95._Serial_print(out);
+      atBC95._Serial_print(out);
 
       if(debug){
         Serial.print(out);
@@ -368,24 +369,24 @@ void Magellan_BC95::printMsgID(unsigned int messageID){
   utoa(highByte(messageID),Msg_ID,16);
   if(highByte(messageID)<16){
     if(debug) Serial.print(F("0"));
-    atbc95._Serial_print(F("0"));
+    atBC95._Serial_print(F("0"));
     if(debug) Serial.print(Msg_ID);
-    atbc95._Serial_print(Msg_ID);
+    atBC95._Serial_print(Msg_ID);
   }
   else{
-    atbc95._Serial_print(Msg_ID);
+    atBC95._Serial_print(Msg_ID);
     if(debug)  Serial.print(Msg_ID);
   }
 
   utoa(lowByte(messageID),Msg_ID,16);
   if(lowByte(messageID)<16){
     if(debug)  Serial.print(F("0"));
-    atbc95._Serial_print(F("0"));
+    atBC95._Serial_print(F("0"));
     if(debug)  Serial.print(Msg_ID);
-    atbc95._Serial_print(Msg_ID);
+    atBC95._Serial_print(Msg_ID);
   }
   else{
-    atbc95._Serial_print(Msg_ID);
+    atBC95._Serial_print(Msg_ID);
     if(debug)  Serial.print(Msg_ID);
   }
 }
@@ -398,22 +399,22 @@ void Magellan_BC95::printPathlen(unsigned int path_len,String init_str)
 
       char extend_L[3];
       itoa(lowByte(extend_len),extend_L,16);
-      atbc95._Serial_print(init_str);
-      atbc95._Serial_print(F("d"));
+      atBC95._Serial_print(init_str);
+      atBC95._Serial_print(F("d"));
 
       if(debug) Serial.print(init_str);
       if(debug) Serial.print(F("d"));
 
       if(extend_len<=15){
-        atbc95._Serial_print(F("0"));
-        atbc95._Serial_print(extend_L);
+        atBC95._Serial_print(F("0"));
+        atBC95._Serial_print(extend_L);
 
 
         if(debug) Serial.print(F("0"));
         if(debug) Serial.print(extend_L);
       }
       else{
-        atbc95._Serial_print(extend_L);
+        atBC95._Serial_print(extend_L);
         if(debug) Serial.print(extend_L);
       }
       
@@ -425,8 +426,8 @@ void Magellan_BC95::printPathlen(unsigned int path_len,String init_str)
         char hexpath_len[2];
         memset(hexpath_len,'\0',1);   
         sprintf(hexpath_len,"%i",path_len);
-        atbc95._Serial_print(init_str);
-        atbc95._Serial_print(hexpath_len);
+        atBC95._Serial_print(init_str);
+        atBC95._Serial_print(hexpath_len);
         if(debug) Serial.print(init_str);
         if(debug) Serial.print(hexpath_len);
 
@@ -435,22 +436,22 @@ void Magellan_BC95::printPathlen(unsigned int path_len,String init_str)
       {
         if(path_len==10) 
         {
-          atbc95._Serial_print(init_str);
-          atbc95._Serial_print(F("a"));
+          atBC95._Serial_print(init_str);
+          atBC95._Serial_print(F("a"));
           if(debug) Serial.print(init_str);
           if(debug) Serial.print(F("a"));
         }
         if(path_len==11)
         {
-          atbc95._Serial_print(init_str);
-          atbc95._Serial_print(F("b"));
+          atBC95._Serial_print(init_str);
+          atBC95._Serial_print(F("b"));
           if(debug) Serial.print(init_str);
           if(debug) Serial.print(F("b"));
         } 
         if(path_len==12)
         {
-          atbc95._Serial_print(init_str);
-          atbc95._Serial_print(F("c"));
+          atBC95._Serial_print(init_str);
+          atBC95._Serial_print(F("c"));
           if(debug) Serial.print(init_str);
           if(debug) Serial.print(F("c"));
         } 
@@ -476,7 +477,7 @@ void Magellan_BC95::printUriPath(String uripath,String optnum)
 
 void Magellan_BC95::msgPost(String payload,option *coapOption,unsigned int totaloption)
 {
-  atbc95._serial_flush();
+  atBC95._serial_flush();
   option *stroption1;
   stroption1=coapOption;
 
@@ -490,7 +491,7 @@ void Magellan_BC95::msgPost(String payload,option *coapOption,unsigned int total
   unsigned int headerLen=2;
   unsigned int tokenLen=2;
   unsigned int msgIdLen=2;
-  unsigned int paylodMakerLen=2;
+  unsigned int payloadMakerLen=2;
 
   if(en_post){
 
@@ -499,7 +500,7 @@ void Magellan_BC95::msgPost(String payload,option *coapOption,unsigned int total
       if(printstate) Serial.print(F(" "));
       if(printstate) Serial.print(payload);
 
-      unsigned int buff_len=headerLen+tokenLen+msgIdLen+paylodMakerLen; //header(2) + token(2) + msgID(2) +payloadmaker(2) 
+      unsigned int buff_len=headerLen+tokenLen+msgIdLen+payloadMakerLen; //header(2) + token(2) + msgID(2) +payloadmaker(2) 
 
       buff_len+=payload.length(); // add payload lenght
 
@@ -518,12 +519,12 @@ void Magellan_BC95::msgPost(String payload,option *coapOption,unsigned int total
         stroption1++;
       }
 
-      atbc95._Serial_print(serverIP,port,buff_len*atbc95.msgLenMul);
+      atBC95._Serial_print(serverIP,port,buff_len*atBC95.msgLenMul);
 
-      if(debug) Serial.print(buff_len*atbc95.msgLenMul);
+      if(debug) Serial.print(buff_len*atBC95.msgLenMul);
       if(debug) Serial.print(F(",4202"));
 
-      atbc95._Serial_print(F("4202"));
+      atBC95._Serial_print(F("4202"));
 
       printMsgID(Msg_ID);                         // 2
       printMsgID(post_token);                     //print token 2
@@ -576,15 +577,15 @@ void Magellan_BC95::msgPost(String payload,option *coapOption,unsigned int total
         stroption2++;
       }
 
-      atbc95._Serial_print(F("1132"));                 //content-type json 2
-      if(debug) Serial.print(F("1132"));               //content-type json 2
+      atBC95._Serial_print(F("1132"));                 //content-type json 2
+      if(debug) Serial.print(F("1132"));                 //content-type json 2
       if (payload.length()>0)
       {
-        atbc95._Serial_print(F("ff")); 
+        atBC95._Serial_print(F("ff")); 
         if(debug) Serial.print(F("ff"));             
         printHEX(data);  
       }
-      atbc95._Serial_println();
+      atBC95._Serial_println();
       if(printstate) Serial.println();
   }   
 }
@@ -629,11 +630,11 @@ void Magellan_BC95::msgGet(option *coapOption,unsigned int totaloption,String Pr
     stroption1++;
   }
 
-  atbc95._Serial_print(serverIP,port,buff_len*atbc95.msgLenMul);
+  atBC95._Serial_print(serverIP,port,buff_len*atBC95.msgLenMul);
 
-  if (debug) Serial.print(buff_len*atbc95.msgLenMul);
+  if(debug) Serial.print(buff_len*atBC95.msgLenMul);
   if(debug) Serial.print(F(",4201"));
-  atbc95._Serial_print(F("4201"));
+  atBC95._Serial_print(F("4201"));
   
   printMsgID(Msg_ID);                        //send msg ID to connectivity module
   printMsgID(get_token);                     //send msg token to connectivity module
@@ -686,18 +687,18 @@ void Magellan_BC95::msgGet(option *coapOption,unsigned int totaloption,String Pr
     stroption2++;
   }
 
-  //atbc95._Serial_print(F("8104"));          //Block size 256 with CoAP Header
+  //atBC95._Serial_print(F("8104"));          //Block size 256 with CoAP Header
   //if(debug) Serial.print(F("8104"));          
 
-  //atbc95._Serial_print(F("8105"));        //Block size 512
+  //atBC95._Serial_print(F("8105"));        //Block size 512
   //if(debug) Serial.print(F("8105"));
-  atbc95._Serial_print(F("8106"));        //Block size 1024
+  atBC95._Serial_print(F("8106"));        //Block size 1024
   if(debug) Serial.print(F("8106"));
   
 
-  atbc95._Serial_println();
+  atBC95._Serial_println();
 
-  atbc95._serial_flush();
+  atBC95._serial_flush();
 
   if(printstate) Serial.println();
   sendget=true;
@@ -734,7 +735,7 @@ String Magellan_BC95::postData(String payload,option *coapOption,unsigned int to
 
       while(true)
       {
-        atbc95.waitResponse(data_resp,server);
+        atBC95.waitResponse(data_resp,server);
         manageResponse(data_resp);
 
         unsigned int currenttime=millis();
@@ -768,13 +769,11 @@ String Magellan_BC95::postData(String payload,option *coapOption,unsigned int to
         count_post_timeout++;
         Serial.println(count_post_timeout);
       if(printstate) Serial.println();
-
-        if(count_post_timeout>=3)
+        if(count_post_timeout>2)
          {
-          count_post_timeout = 0;
-          begin();
+          delay(100);
+          atBC95.reset();
          }
-
      }
     }  
     
@@ -784,17 +783,15 @@ String Magellan_BC95::postData(String payload,option *coapOption,unsigned int to
   else{
     token_error_report=false;
     count_error_token_post++;
-    if(count_error_token_post>=10)
+    if(count_error_token_post>9)
      {
-      count_error_token_post = 0;
-      //Serial.println(F("Device has not registered to the Magellan Platform or Invalid Token."));
-      begin();
-      token_error_report=true;
+      delay(100);
+      atBC95.reset();      
      }
   }
 
   post_process=false;
-  atbc95._serial_flush();
+  atBC95._serial_flush();
   return rcvdata;
 }
 
@@ -825,12 +822,12 @@ String Magellan_BC95::getData(option *coapoption,unsigned int totaloption,String
             previous_get=current_time;
             if(i==maxretrans){
               if(printstate) Serial.println(F("Get timeout"));
-              get_process=false;
-              begin();
+              delay(100);
+              atBC95.reset(); 
             }
             break;
           }
-          atbc95.waitResponse(data_resp,server);
+          atBC95.waitResponse(data_resp,server);
           manageResponse(data_resp);
         }
 
@@ -852,7 +849,7 @@ String Magellan_BC95::getData(option *coapoption,unsigned int totaloption,String
     //count_error_token_get++;
   } 
 
-  atbc95._serial_flush();
+  atBC95._serial_flush();
   return rcvdata;
 }
 
@@ -1139,19 +1136,19 @@ void Magellan_BC95::rspPrintOut(String rx)
         - ping to check network status
 */
 String Magellan_BC95::getSignal(){
-  return atbc95.getSignal();
+  return atBC95.getSignal();
 }
 
 pingRESP Magellan_BC95::pingIP(String IP){
-  return atbc95.pingIP(IP);
+  return atBC95.pingIP(IP);
 }
 
 radio Magellan_BC95::getRadioStat(){
-  return atbc95.getRadioStat();
+  return atBC95.getRadioStat();
 }
 
 dateTime Magellan_BC95::getClock(unsigned int timezone){
-  return atbc95.getClock(timezone);
+  return atBC95.getClock(timezone);
 }
 
 void Magellan_BC95::printErrCode(String errcode){
