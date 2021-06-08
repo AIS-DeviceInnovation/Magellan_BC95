@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AIS_BC95_API v1.0.0 NB-IoT.
+AIS_BC95_API v1.1.2 NB-IoT.
 support Quectel BC95
 NB-IoT with AT command
  
 Author: Device Innovation team     
-Create Date: 3 February 2020. 
-Modified: 22 July 2020.
+Create Date: 8 February 2021. 
+Modified: 31 May 2021.
 
 Released for private usage.
 */
