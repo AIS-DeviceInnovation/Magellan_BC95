@@ -27,7 +27,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Magellan_BC95 v1.1.1 NB-IoT Magellan Platform .
+Magellan_BC95 v1.1.2 NB-IoT Magellan Platform .
 support Quectel BC95
 NB-IoT with AT command
 
@@ -41,8 +41,8 @@ and supported only Magellan IoT Platform
 *** the payload has limit with the dynamic memory of your board   
  
 Author: Device Innovation team     
-Create Date: 3 February 2020. 
-Modified: 18 February 2021.
+Create Date: 8 February 2021. 
+Modified: 31 May 2021.
 
 Released for private usage.
 */
