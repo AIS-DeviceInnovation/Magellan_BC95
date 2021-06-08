@@ -1,10 +1,9 @@
-
-![Library Version](https://img.shields.io/badge/Version-1.1.1-green)
+![Library Version](https://img.shields.io/badge/Version-1.1.2-green)
 
 # AIS Library
 
-## AIS BC95 API
-AIS BC95 API Library, used on arduino, have been developed for 
+## AIS BC95
+AIS BC95 PI Library, used on arduino, have been developed for 
 any platform. This library include API such as UDP.
 ### Example for use the AIS BC95 API
 #### Call the AIS BC95 API library:
