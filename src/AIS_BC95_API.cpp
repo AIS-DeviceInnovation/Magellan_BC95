@@ -27,19 +27,19 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AIS_BC95_API v1.1.1 NB-IoT.
+AIS_BC95_API v1.1.2 NB-IoT.
 support Quectel BC95
 NB-IoT with AT command
  
 Author: Device Innovation team     
-Create Date: 3 February 2020. 
-Modified: 18 February 2020.
+Create Date: 8 February 2021. 
+Modified: 31 May 2021.
 
 Released for private usage.
 */
 #include "AIS_BC95_API.h"
 
-AT_BC95 at_bc95;
+AT_BC95 at_BC95;
 void event_null(char *data){}
 
 /****************************************/
@@ -52,12 +52,12 @@ AIS_BC95_API::AIS_BC95_API(){
 
 void AIS_BC95_API:: begin(String addressI,String serverdesport){
 	Serial.println(F("----------------BEGIN----------------"));
-	at_bc95.debug = debug;
-	at_bc95.setupModule(addressI,serverdesport);
+	at_BC95.debug = debug;
+	at_BC95.setupModule(addressI,serverdesport);
 }
 
 void AIS_BC95_API::pingIP(String IP){
-	at_bc95.pingIP(IP);
+	at_BC95.pingIP(IP);
 }
 
 /****************************************/
@@ -79,7 +79,7 @@ void AIS_BC95_API::sendMsgSTR(String address,String desport,String payload){
 		int x_len = payload.length();
 		char buf[x_len+2];
 		payload.toCharArray(buf,x_len+1);
-		send_msg(address,desport,payload.length(),at_bc95.toHEX(buf));
+		send_msg(address,desport,payload.length(),at_BC95.toHEX(buf));
 	}
 }
 
@@ -92,16 +92,16 @@ void AIS_BC95_API::send_msg(String address,String desport,unsigned int len,Strin
     Serial.print(F("# Port : "));
     Serial.println(desport);
 
-    at_bc95._Serial_print(address,desport,len);
-    at_bc95._Serial_print(payload);
-    at_bc95._Serial_println();
+    at_BC95._Serial_print(address,desport,len);
+    at_BC95._Serial_print(payload);
+    at_BC95._Serial_println();
 }
 
 /****************************************/
 /**         Receive UDP Message        **/
 /****************************************/
 void AIS_BC95_API::waitResponse(String &retdata,String server){
-  	at_bc95.waitResponse(retdata,server);  	
+  	at_BC95.waitResponse(retdata,server);  	
 }
 
 /****************************************/
@@ -120,34 +120,34 @@ void AIS_BC95_API::waitResponse(String &retdata,String server){
   		- Get Device IMEI
 */
 String AIS_BC95_API::getSignal(){
-	return at_bc95.getSignal();
+	return at_BC95.getSignal();
 }
 
 String AIS_BC95_API::getDeviceIP(){
-	return at_bc95.getDeviceIP();
+	return at_BC95.getDeviceIP();
 }
 
 String AIS_BC95_API::getIMSI(){
-	return at_bc95.getIMSI();
+	return at_BC95.getIMSI();
 }
 
 String AIS_BC95_API::getICCID(){
-	return at_bc95.getICCID();
+	return at_BC95.getICCID();
 }
 
 String AIS_BC95_API::getIMEI(){
-	return at_bc95.getIMEI();
+	return at_BC95.getIMEI();
 }
 
 radio AIS_BC95_API::getRadioStat(){
-  return at_bc95.getRadioStat();
+  return at_BC95.getRadioStat();
 }
 
 dateTime AIS_BC95_API::getClock(unsigned int timezone){
-  return at_bc95.getClock(timezone);
+  return at_BC95.getClock(timezone);
 }
 
 // bool AIS_BC95_API::checkPSMmode(){
-//   return at_bc95.checkPSMmode();
+//   return at_BC95.checkPSMmode();
 // }
 

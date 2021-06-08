@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AT Command Dictionary for Quectel BC95 version 1.0.2
+AT Command Dictionary for Quectel BC95 version 1.1.2
 support Quectel BC95
 NB-IoT with AT command
 
 Author: Device Innovation team  
-Create Date: 2 January 2020. 
-Modified: 18 February 2021.
+Create Date: 8 February 2021. 
+Modified: 31 May 2021.
 */
 #include "AT_BC95.h"  
 #include "board.h"
@@ -71,6 +71,8 @@ void AT_BC95::setupModule(String address,String port){
     _Serial->println("AT+CMEE=1");                    // set report error
     _serial_flush();
 
+    delay(700);
+
     Serial.print(F(">>IMSI   : "));
     Serial.println(getIMSI());
 
@@ -81,12 +83,7 @@ void AT_BC95::setupModule(String address,String port){
     Serial.println(getIMEI());
 
     if(debug)Serial.print(F(">>FW ver : "));
-     if(debug)Serial.println(getFirmwareVersion());
-  
-    delay(500);
-    Serial.print(F(">>Signal : "));
-    Serial.print(getSignal()); 
-    Serial.println(F(" dBm")); 
+    if(debug)Serial.println(getFirmwareVersion());
 
     delay(800);
     _serial_flush();
@@ -106,13 +103,13 @@ void AT_BC95::setupModule(String address,String port){
       Serial.println(F("-------- Disconnected ---------"));
       //reset
       delay(200);
-      __asm__ __volatile__ ("jmp 0x0000");
+      reset();
     }
 
-    if(debug){
-        Serial.print(F(">>APN   : "));
-        Serial.println(getAPN());
-    }
+    delay(500);
+    Serial.print(F(">>Signal : "));
+    Serial.print(getSignal()); 
+    Serial.println(F(" dBm")); 
 
     previous=millis();
   }
@@ -140,7 +137,7 @@ void AT_BC95::check_module_ready(){
         if(count > 5) {          
           Serial.print(F("\nError to connect NB Module, rebooting..."));
           delay(200);
-          __asm__ __volatile__ ("jmp 0x0000");
+          reset();
         } 
            
       }
@@ -237,9 +234,10 @@ bool AT_BC95::setPhoneFunction(){
         status=false;
         break;
       }
-      Serial.print(F("."));
+      //Serial.print(F("."));
     }
   }
+  data_input="";
   return status;
 }
 
@@ -260,8 +258,10 @@ void AT_BC95::connectNetwork(){
 // Create a UDP socket and connect socket to remote address and port
 bool AT_BC95::createUDPSocket(String address,String port){
   bool status=false;
+
   _Serial->print(F("AT+NSOCR=DGRAM,17,"));
   _Serial->println(port+",1");
+
   delay(500);
   while(1){
     if(_Serial->available()){
@@ -270,8 +270,8 @@ bool AT_BC95::createUDPSocket(String address,String port){
         status=true;
         break;
       }else if(data_input.indexOf(F("+CME ERROR: 4"))!=-1){
-      	_Serial->print(F("AT+NSOCR=DGRAM,17,"));
-  		_Serial->println(port+",1");
+          _Serial->print(F("AT+NSOCR=DGRAM,17,"));
+          _Serial->println(port+",1");
       }
       Serial.print(F("."));
     }
@@ -324,17 +324,16 @@ pingRESP AT_BC95::pingIP(String IP){
     pingr.addr = data.substring(index+1,index2);
     pingr.ttl = data.substring(index2+1,index3);
     pingr.rtt = data.substring(index3+1,data.length()-1);
-  }else { 
-    Serial.println(">>Ping Failed");
-  }
+  }else { Serial.println(">>Ping Failed");}
+  
   blankChk(pingr.addr);
   blankChk(pingr.ttl);
   blankChk(pingr.rtt);
   if(data!="") Serial.println(">>Ping IP : "+pingr.addr + ", ttl= " + pingr.ttl + ", rtt= " + pingr.rtt);  
+ 
   _serial_flush();
   data_input="";
-  
-return pingr;
+  return pingr;
 }
 
 /****************************************/
@@ -347,7 +346,13 @@ String AT_BC95::getIMSI(){
     if(_Serial->available()){
       data_input=_Serial->readStringUntil('\n');
       if(data_input.indexOf(F("OK"))!=-1 && imsi.indexOf(F("52003"))!=-1) break;
-      else if(data_input.indexOf(F("ERROR"))!=-1) _Serial->println(F("AT+CIMI"));
+      else if(data_input.indexOf(F("ERROR: 524"))!=-1){ 
+        setPhoneFunction();
+        _Serial->println(F("AT+CIMI"));
+      }
+      else if(data_input.indexOf(F("ERROR: 4"))!=-1){ 
+        _Serial->println(F("AT+CIMI"));
+      }
       else imsi+=data_input;
     }
   }
@@ -405,7 +410,7 @@ String AT_BC95::getDeviceIP(){
       }
       else if(data_input.indexOf(F("OK"))!=-1) break;
       else if(data_input.indexOf(F("ERROR"))!=-1) {
-        deviceIP = "n/a";
+        deviceIP = "N/A";
         break;
       }
     }
@@ -442,12 +447,14 @@ String AT_BC95::getSignal(){
             rssi = data_csq.toInt();
             rssi = (2*rssi)-113;
             data_csq = String(rssi);
+
           }
         }
       }
     }
   if(rssi==-113 || rssi==85)count++;
   delay(1000);
+  data_input="";
   }while(rssi==-113&&count<=10 || rssi==85&&count<=10);
   if(rssi==-113 || rssi==85){
     data_csq = "-113";
@@ -599,6 +606,7 @@ void AT_BC95::blankChk(String& val){
 /****************************************/
 // Send AT command to send UDP message
 void AT_BC95::_Serial_print(String address,String port,unsigned int len){
+  
   _Serial->print(F("AT+NSOST=0"));
   _Serial->print(F(","));
   _Serial->print(address);
@@ -607,6 +615,7 @@ void AT_BC95::_Serial_print(String address,String port,unsigned int len){
   _Serial->print(F(","));
   _Serial->print(len);
   _Serial->print(F(","));
+
 }
 
 // Send message type String
@@ -633,10 +642,10 @@ void AT_BC95::_Serial_println(){
 /**        Receive UDP Message         **/
 /****************************************/
 // Receive incoming message
-void AT_BC95:: waitResponse(String &retdata,String server){ 
+void AT_BC95::waitResponse(String &retdata,String server){ 
   unsigned long current=millis();
   if((current-previous>=500) && !(_Serial->available())){
-    _Serial->println(F("AT+NSORF=0,512"));
+    _Serial->println(F("AT+NSORF=0,512")); 
     previous=current;
   }
 
@@ -656,7 +665,6 @@ void AT_BC95:: waitResponse(String &retdata,String server){
   if (end){
     manageResponse(retdata,server);
     end=false;
-    data_input=F("");
   }
   
 }
@@ -814,9 +822,12 @@ dateTime AT_BC95::getClock(unsigned int timezone){
     dateTime.time.trim();
     dateTime.date.trim();
   }
-
   blankChk(dateTime.time);
   blankChk(dateTime.date);
-
   return dateTime;
+}
+
+void AT_BC95::reset(){
+  delay(500);
+  __asm__ __volatile__ ("jmp 0x0000");
 }

@@ -29,20 +29,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Device Innovation team     
 Create Date: 2 January 2020. 
-Modified: 11 February 2020.
+Modified: 8 April 2021.
 
-Released for private usag
+Released for private usage
 */
 
 // Define the board used AltSoftSerial.h 
 #if defined(ARDUINO_AVR_UNO) || (ARDUINO_AVR_MEGA2560)
     #define ATLSOFTSERIAL 1
+	#include "AltSoftSerial.h"
 #else 
     #define ATLSOFTSERIAL 0
 #endif 
-#if ATLSOFTSERIAL 
-	#include "AltSoftSerial.h"
-#endif
 
 
 //Hardware specification and configuration
