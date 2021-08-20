@@ -95,7 +95,7 @@ String Magellan_BC95::thingsRegister() {
     coapoption[2].optlen    = stropt[2].length();
     coapoption[2].optionnum = 11;
 
-    if (imsi.indexOf(F("52003")) != -1 and imsi.length() > 15) {
+    if ((imsi.indexOf(F("52003")) != -1) and (imsi.length() > 15)) {
         int indexst = imsi.indexOf(F("52003"));
         imsi        = imsi.substring(indexst, 16);
     }
@@ -123,7 +123,7 @@ String Magellan_BC95::thingsRegister() {
 
 String Magellan_BC95::report(String payload, unsigned int qos) {
     String Response_Report = "";
-    if (Token == "" || Token.length() < 36) {
+    if ((Token == "") || (Token.length() < 36)) {
         Serial.println(F("Miss Token, Trying register..."));
         while (true) {
             thingsRegister();
@@ -166,11 +166,11 @@ String Magellan_BC95::report(String payload, unsigned int qos) {
         coapoption[4].optlen    = stropt[4].length();
         coapoption[4].optionnum = 11;
 
-        if (qos == 0) {
+        if (qos == 0U) {
             Response_Report = postData(payload, coapoption, totaloption);
         }
 
-        if (qos >= 1) {
+        if (qos >= 1U) {
             while (true) {
                 Response_Report = postData(payload, coapoption, totaloption);
                 if (success && token_error_report) {
@@ -185,7 +185,7 @@ String Magellan_BC95::report(String payload, unsigned int qos) {
 
 String Magellan_BC95::getConfig(String Resource, unsigned int qos) {
     String Response_Config = "";
-    if (Token == "" || Token.length() < 36) {
+    if ((Token == "") || (Token.length() < 36)) {
         Serial.println(F("Miss Token, Trying register..."));
         while (true) {
             thingsRegister();
@@ -237,7 +237,7 @@ String Magellan_BC95::getConfig(String Resource, unsigned int qos) {
 
 String Magellan_BC95::getControl(String Resource, unsigned int qos) {
     String Response_Control = "";
-    if (Token == "" || Token.length() < 36) {
+    if ((Token == "") || (Token.length() < 36)) {
         Serial.println(F("Miss Token, Trying register..."));
         while (true) {
             thingsRegister();
@@ -293,8 +293,10 @@ String Magellan_BC95::getControl(String Resource, unsigned int qos) {
 
 bool Magellan_BC95::begin() {
     // bool created=true;
-    if (debug)
+    if (debug) {
         atBC95.debug = true;
+    }
+
     bool created       = false;
     token_error_report = true;
     token_error_config = true;
@@ -328,20 +330,16 @@ bool Magellan_BC95::begin() {
 /*************************************************/
 void Magellan_BC95::printHEX(char* str) {
     char* hstr;
+    char  out[3];
+
     hstr = str;
-    char out[3];
-    memset(out, '\0', 2);
-    int  i    = 0;
-    bool flag = false;
-    while (*hstr) {
-        flag = itoa((int)*hstr, out, 16);
+    while (*hstr != '\0') {
+        (void) itoa((int)*hstr, out, 16);
 
-        if (flag) {
-            atBC95._Serial_print(out);
+        atBC95._Serial_print(out);
 
-            if (debug) {
-                Serial.print(out);
-            }
+        if (debug) {
+            Serial.print(out);
         }
         hstr++;
     }
@@ -352,101 +350,110 @@ void Magellan_BC95::printMsgID(unsigned int messageID) {
 
     utoa(highByte(messageID), Msg_ID, 16);
     if (highByte(messageID) < 16) {
-        if (debug)
-            Serial.print(F("0"));
         atBC95._Serial_print(F("0"));
-        if (debug)
-            Serial.print(Msg_ID);
         atBC95._Serial_print(Msg_ID);
+
+        if (debug) {
+            Serial.print(F("0"));
+            Serial.print(Msg_ID);
+        }
     }
     else {
         atBC95._Serial_print(Msg_ID);
-        if (debug)
+        if (debug) {
             Serial.print(Msg_ID);
+        }
     }
 
     utoa(lowByte(messageID), Msg_ID, 16);
     if (lowByte(messageID) < 16) {
-        if (debug)
+        if (debug) {
             Serial.print(F("0"));
+        }
         atBC95._Serial_print(F("0"));
-        if (debug)
+        if (debug) {
             Serial.print(Msg_ID);
+        }
         atBC95._Serial_print(Msg_ID);
     }
     else {
         atBC95._Serial_print(Msg_ID);
-        if (debug)
+        if (debug) {
             Serial.print(Msg_ID);
+        }
     }
 }
 
 void Magellan_BC95::printPathlen(unsigned int path_len, String init_str) {
-    unsigned int extend_len = 0;
-    if (path_len >= 13) {
-        extend_len = path_len - 13;
+    unsigned int extend_len;
+
+    if (path_len >= 13U) {
+        extend_len = path_len - 13U;
 
         char extend_L[3];
-        itoa(lowByte(extend_len), extend_L, 16);
+        (void) itoa(lowByte(extend_len), extend_L, 16);
         atBC95._Serial_print(init_str);
         atBC95._Serial_print(F("d"));
 
-        if (debug)
+        if (debug) {
             Serial.print(init_str);
-        if (debug)
             Serial.print(F("d"));
+        }
 
-        if (extend_len <= 15) {
+        if (extend_len <= 15U) {
             atBC95._Serial_print(F("0"));
             atBC95._Serial_print(extend_L);
 
-            if (debug)
+            if (debug) {
                 Serial.print(F("0"));
-            if (debug)
                 Serial.print(extend_L);
+            }
         }
         else {
             atBC95._Serial_print(extend_L);
-            if (debug)
+            if (debug) {
                 Serial.print(extend_L);
+            }
         }
     }
     else {
-        if (path_len <= 9) {
+        if (path_len <= 9U) {
             char hexpath_len[2];
-            memset(hexpath_len, '\0', 1);
-            sprintf(hexpath_len, "%i", path_len);
+            (void) memset(hexpath_len, '\0', 1);
+            (void) sprintf(hexpath_len, "%i", path_len);
             atBC95._Serial_print(init_str);
             atBC95._Serial_print(hexpath_len);
-            if (debug)
+            if (debug) {
                 Serial.print(init_str);
-            if (debug)
                 Serial.print(hexpath_len);
+            }
         }
         else {
-            if (path_len == 10) {
+            if (path_len == 10U) {
                 atBC95._Serial_print(init_str);
                 atBC95._Serial_print(F("a"));
-                if (debug)
+                if (debug) {
                     Serial.print(init_str);
-                if (debug)
                     Serial.print(F("a"));
+                }
             }
-            if (path_len == 11) {
+
+            if (path_len == 11U) {
                 atBC95._Serial_print(init_str);
                 atBC95._Serial_print(F("b"));
-                if (debug)
+                if (debug) {
                     Serial.print(init_str);
-                if (debug)
                     Serial.print(F("b"));
+                }
             }
-            if (path_len == 12) {
+
+            if (path_len == 12U) {
                 atBC95._Serial_print(init_str);
                 atBC95._Serial_print(F("c"));
-                if (debug)
+                if (debug) {
                     Serial.print(init_str);
-                if (debug)
                     Serial.print(F("c"));
+                }
             }
         }
     }
@@ -455,11 +462,10 @@ void Magellan_BC95::printPathlen(unsigned int path_len, String init_str) {
 void Magellan_BC95::printUriPath(String uripath, String optnum) {
     unsigned int uripathlen = uripath.length();
 
-    if (uripathlen > 0) {
+    if (uripathlen > 0U) {
         printPathlen(uripathlen, optnum);
 
         char data[uripath.length() + 1];
-        memset(data, '\0', uripath.length());
         uripath.toCharArray(data, uripath.length() + 1);
 
         printHEX(data);
@@ -475,7 +481,6 @@ void Magellan_BC95::msgPost(String payload, option* coapOption, unsigned int tot
     stroption2 = coapOption;
 
     char data[payload.length() + 1];
-    memset(data, '\0', payload.length());
     payload.toCharArray(data, payload.length() + 1);
 
     unsigned int headerLen       = 2;
@@ -484,40 +489,36 @@ void Magellan_BC95::msgPost(String payload, option* coapOption, unsigned int tot
     unsigned int payloadMakerLen = 2;
 
     if (en_post) {
-
-        if (printstate)
+        if (printstate) {
             Serial.print(F(">> post: Msg_ID "));
-        if (printstate)
             Serial.print(Msg_ID);
-        if (printstate)
             Serial.print(F(" "));
-        if (printstate)
             Serial.print(payload);
+        }
 
         unsigned int buff_len =
             headerLen + tokenLen + msgIdLen + payloadMakerLen; // header(2) + token(2) + msgID(2) +payloadmaker(2)
 
         buff_len += payload.length(); // add payload lenght
 
-        if (payload.length() > 0) {
-            buff_len += 1;
+        if (payload.length() > 0U) {
+            buff_len += 1U;
         }
 
-        for (unsigned int i = 0; i < totaloption; i++) {
-            buff_len += stroption1->optlen + 1;
-            if (stroption1->optlen >= 13) {
-                buff_len += 1;
+        for (unsigned int i = 0U; i < totaloption; i++) {
+            buff_len += stroption1->optlen + 1U;
+            if (stroption1->optlen >= 13U) {
+                buff_len += 1U;
             }
             stroption1++;
         }
 
         atBC95._Serial_print(serverIP, port, buff_len * atBC95.msgLenMul);
 
-        if (debug)
+        if (debug) {
             Serial.print(buff_len * atBC95.msgLenMul);
-        if (debug)
             Serial.print(F(",4202"));
-
+        }
         atBC95._Serial_print(F("4202"));
 
         printMsgID(Msg_ID);     // 2
@@ -561,6 +562,7 @@ void Magellan_BC95::msgPost(String payload, option* coapOption, unsigned int tot
 
                 default :
                     init_opt = String(outopt);
+                    break;
             }
 
             printUriPath(stroption2->stroption, init_opt);
@@ -569,17 +571,22 @@ void Magellan_BC95::msgPost(String payload, option* coapOption, unsigned int tot
         }
 
         atBC95._Serial_print(F("1132")); // content-type json 2
-        if (debug)
+        if (debug) {
             Serial.print(F("1132")); // content-type json 2
+        }
+
         if (payload.length() > 0) {
             atBC95._Serial_print(F("ff"));
-            if (debug)
+            if (debug) {
                 Serial.print(F("ff"));
+            }
             printHEX(data);
         }
+
         atBC95._Serial_println();
-        if (printstate)
+        if (printstate) {
             Serial.println();
+        }
     }
 }
 
@@ -594,7 +601,6 @@ void Magellan_BC95::msgGet(option* coapOption, unsigned int totaloption, String 
     String Resource = "";
 
     char data[Resource.length() + 1];
-    memset(data, '\0', Resource.length());
     Resource.toCharArray(data, Resource.length() + 1);
     GETCONTENT = false;
     ACK        = false;
@@ -604,43 +610,42 @@ void Magellan_BC95::msgGet(option* coapOption, unsigned int totaloption, String 
     unsigned int msgIdLen       = 2;
     unsigned int paylodMakerLen = 2;
 
-    if (printstate)
+    if (printstate) {
         Serial.print(F(">> GET data : Msg_ID "));
-    if (printstate)
         Serial.print(Msg_ID);
-    if (printstate)
         Serial.print(F(" "));
-    if (printstate)
         Serial.print(Resource);
+    }
 
     unsigned int path_len = Resource.length();
     unsigned int buff_len =
         headerLen + tokenLen + msgIdLen + paylodMakerLen; // header(2) + token(2) + msgID(2) +payloadmaker(2)
 
-    for (unsigned int i = 0; i < totaloption; i++) {
-        buff_len += stroption1->optlen + 1;
-        if (stroption1->optlen >= 13) {
-            buff_len += 1;
+    for (unsigned int i = 0U; i < totaloption; i++) {
+        buff_len += stroption1->optlen + 1U;
+        if (stroption1->optlen >= 13U) {
+            buff_len += 1U;
         }
         stroption1++;
     }
 
     atBC95._Serial_print(serverIP, port, buff_len * atBC95.msgLenMul);
 
-    if (debug)
+    if (debug) {
         Serial.print(buff_len * atBC95.msgLenMul);
-    if (debug)
         Serial.print(F(",4201"));
+    }
     atBC95._Serial_print(F("4201"));
 
     printMsgID(Msg_ID);    // send msg ID to connectivity module
     printMsgID(get_token); // send msg token to connectivity module
 
-    unsigned int lastopt = 0;
-    unsigned int optnum  = 0;
-    unsigned int outopt  = 0;
+    unsigned int lastopt;
+    unsigned int optnum;
+    unsigned int outopt;
 
-    for (unsigned int i = 0; i < totaloption; i++) {
+    lastopt = 0U;
+    for (unsigned int i = 0U; i < totaloption; i++) {
         optnum = stroption2->optionnum;
         outopt = optnum - lastopt;
         String init_opt;
@@ -674,6 +679,7 @@ void Magellan_BC95::msgGet(option* coapOption, unsigned int totaloption, String 
 
             default :
                 init_opt = String(outopt);
+                break;
         }
 
         printUriPath(stroption2->stroption, init_opt);
@@ -687,15 +693,17 @@ void Magellan_BC95::msgGet(option* coapOption, unsigned int totaloption, String 
     // atBC95._Serial_print(F("8105"));        //Block size 512
     // if(debug) Serial.print(F("8105"));
     atBC95._Serial_print(F("8106")); // Block size 1024
-    if (debug)
+    if (debug) {
         Serial.print(F("8106"));
+    }
 
     atBC95._Serial_println();
 
     atBC95._serial_flush();
 
-    if (printstate)
+    if (printstate) {
         Serial.println();
+    }
     sendget = true;
 }
 /****************************************/
@@ -715,8 +723,9 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
         token      = random(0, 32767); // random message token
         post_token = token;
 
-        if (debug)
+        if (debug) {
             Serial.println(F("Load new payload"));
+        }
 
         Msg_ID  = random(0, 65535); // random message ID
         post_ID = Msg_ID;
@@ -732,7 +741,7 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
                 manageResponse(data_resp);
 
                 unsigned int currenttime = millis();
-                if (currenttime - previous_send > timeout[i] || success) {
+                if (((currenttime - previous_send) > timeout[i]) || success) {
                     previous_send = currenttime;
                     en_post       = true;
                     en_get        = true;
@@ -740,27 +749,30 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
                     break;
                 }
             }
+
             if (success) {
                 break;
             }
             else {
-                if (i + 1 < 5) {
-                    if (printstate)
+                if ((i + 1) < 5) {
+                    if (printstate) {
                         Serial.print(F(">> Retransmit"));
-                    if (printstate)
                         Serial.println(i + 1);
-                    if (printstate)
                         Serial.println(timeout[i + 1]);
+                    }
                 }
             }
         }
+
         if (!success) {
             Serial.print(F("Post timeout : "));
             data_input = "";
             count_post_timeout++;
             Serial.println(count_post_timeout);
-            if (printstate)
+            if (printstate) {
                 Serial.println();
+            }
+
             if (count_post_timeout > 2) {
                 delay(100);
                 atBC95.reset();
@@ -770,8 +782,9 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
 
     printErrCode(rcvdata);
 
-    if (rcvdata.indexOf(F("20000")) != -1)
+    if (rcvdata.indexOf(F("20000")) != -1) {
         count_error_token_post = true;
+    }
     else {
         token_error_report = false;
         count_error_token_post++;
@@ -787,7 +800,7 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
 }
 
 String Magellan_BC95::getData(option* coapoption, unsigned int totaloption, String Proxy) {
-    int timeout[5] = {4000, 8000, 16000, 32000, 64000};
+    unsigned int timeout[5] = {4000, 8000, 16000, 32000, 64000};
     rcvdata        = "";
     data_buffer    = "";
     String server  = serverIP;
@@ -806,11 +819,12 @@ String Magellan_BC95::getData(option* coapoption, unsigned int totaloption, Stri
             while (true) {
                 unsigned int current_time = millis();
 
-                if (current_time - previous_get > timeout[i] || success || ACK || NOTFOUND) {
+                if (((current_time - previous_get) > timeout[i]) || success || ACK || NOTFOUND) {
                     previous_get = current_time;
                     if (i == maxretrans) {
-                        if (printstate)
+                        if (printstate) {
                             Serial.println(F("Get timeout"));
+                        }
                         delay(100);
                         atBC95.reset();
                     }
@@ -820,17 +834,16 @@ String Magellan_BC95::getData(option* coapoption, unsigned int totaloption, Stri
                 manageResponse(data_resp);
             }
 
-            if ((rcvdata.length() > 0 && GETCONTENT) || success || NOTFOUND) {
+            if (((rcvdata.length() > 0) && GETCONTENT) || success || NOTFOUND) {
                 get_process = false;
                 break;
             }
             else {
-                if (printstate)
+                if (printstate) {
                     Serial.print(F(">> Retransmit"));
-                if (printstate)
                     Serial.println(i + 1);
-                if (printstate)
                     Serial.println(timeout[i]);
+                }
             }
         }
     }
@@ -860,32 +873,34 @@ String Magellan_BC95::getData(option* coapoption, unsigned int totaloption, Stri
 */
 void Magellan_BC95::printRspHeader(String Msgstr) {
 
-    if (debug)
+    if (debug) {
         Serial.println(Msgstr);
+    }
 
     resp_msgID = (unsigned int)strtol(&Msgstr.substring(4, 8)[0], NULL, 16);
     printRspType(Msgstr.substring(0, 2), resp_msgID);
 
-    bool en_print = (post_process && resp_msgID == post_ID) || (get_process && resp_msgID == get_ID);
+    bool en_print = (post_process && (resp_msgID == post_ID)) || (get_process && (resp_msgID == get_ID));
 
     switch ((int)strtol(&Msgstr.substring(2, 4)[0], NULL, 16)) {
         case EMPTY :
             EMP = true;
             Msgstr.remove(0, 8);
             break;
+
         case CREATED :
             EMP        = false;
             NOTFOUND   = false;
             GETCONTENT = false;
             RCVRSP     = true;
 
-            if (Msgstr.length() / 2 > 4) {
+            if ((Msgstr.length() / 2U) > 4U) {
                 rsptoken = (unsigned int)strtol(&Msgstr.substring(8, 12)[0], NULL, 16);
-                if (post_process && post_token == rsptoken) {
-                    if (debug)
+                if (post_process && (post_token == rsptoken)) {
+                    if (debug) {
                         Serial.println(F("match token"));
-                    if (debug)
                         Serial.print(rsptoken);
+                    }
                     success = true;
                 }
 
@@ -895,29 +910,33 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
                 Msgstr.remove(0, 8);
             }
 
-            if (printstate && en_print)
+            if (printstate && en_print) {
                 Serial.println(F("2.01 CREATED"));
+            }
             break;
+
         case DELETED : // if(printstate && en_print) Serial.println(F("2.02 DELETED"));
             break;
+
         case VALID : // if(printstate && en_print) Serial.println(F("2.03 VALID"));
             break;
+
         case CHANGED : // if(printstate && en_print) Serial.println(F("2.04 CHANGED"));
             break;
+
         case CONTENT :
             EMP        = false;
             NOTFOUND   = false;
             GETCONTENT = true;
             RCVRSP     = false;
             if (get_process) {
-
-                if (Msgstr.length() / 2 > 4) {
+                if ((Msgstr.length() / 2U) > 4U) {
                     rsptoken = (unsigned int)strtol(&Msgstr.substring(8, 12)[0], NULL, 16);
-                    if (get_process && get_token == rsptoken) {
-                        if (debug)
+                    if (get_process && (get_token == rsptoken)) {
+                        if (debug) {
                             Serial.println(F("match token get"));
-                        if (debug)
                             Serial.print(rsptoken);
+                        }
                         success = true;
                     }
                 }
@@ -925,14 +944,13 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
             }
 
             if (post_process) {
-
-                if (Msgstr.length() / 2 > 4) {
+                if ((Msgstr.length() / 2U) > 4U) {
                     rsptoken = (unsigned int)strtol(&Msgstr.substring(8, 12)[0], NULL, 16);
-                    if (post_process && post_token == rsptoken) {
-                        if (debug)
+                    if (post_process && (post_token == rsptoken)) {
+                        if (debug) {
                             Serial.println(F("match token post"));
-                        if (debug)
                             Serial.print(rsptoken);
+                        }
                         success = true;
                     }
                     Msgstr.remove(0, 12);
@@ -942,12 +960,15 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
                 }
             }
 
-            if (printstate && en_print)
+            if (printstate && en_print) {
                 Serial.println(F("2.05 CONTENT"));
+            }
             break;
+
         case CONTINUE : // if(printstate && en_print) Serial.println(F("2.31 CONTINUE"));
             Msgstr.remove(0, 8);
             break;
+
         // case BAD_REQUEST: if(printstate && en_print) Serial.println(F("4.00 BAD_REQUEST"));
         // Msgstr.remove(0, 8);
         // break;
@@ -955,12 +976,14 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
         // Msgstr.remove(0, 8);
         // break;
         case NOT_FOUND :
-            if (printstate && en_print)
+            if (printstate && en_print) {
                 Serial.println(F("4.04 NOT_FOUND"));
+            }
             GETCONTENT = false;
             NOTFOUND   = true;
             RCVRSP     = false;
             break;
+
         // case METHOD_NOT_ALLOWED:
         // RCVRSP=false;
         // if(printstate && en_print) Serial.println(F("4.05 METHOD_NOT_ALLOWED"));
@@ -970,19 +993,25 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
         case REQUEST_ENTITY_INCOMPLETE : // if(printstate && en_print) Serial.println(F("4.08
                                          // REQUEST_ENTITY_INCOMPLETE"));
             break;
+
         case PRECONDITION_FAILED : // if(printstate && en_print) Serial.println(F("4.12 PRECONDITION_FAILED"));
             break;
+
         case REQUEST_ENTITY_TOO_LARGE : // if(printstate && en_print) Serial.println(F("4.13
                                         // REQUEST_ENTITY_TOO_LARGE"));
             break;
+
         // case UNSUPPORTED_CONTENT_FORMAT: if(printstate && en_print) Serial.println(F("4.15
         // UNSUPPORTED_CONTENT_FORMAT")); break;
         case INTERNAL_SERVER_ERROR :
-            if (printstate && en_print)
+            if (printstate && en_print) {
                 Serial.println(F("5.00 INTERNAL_SERVER_ERROR"));
+            }
             break;
+
         case NOT_IMPLEMENTED : // if(printstate && en_print) Serial.println(F("5.01 NOT_IMPLEMENTED"));
             break;
+
             // case BAD_GATEWAY: if(printstate && en_print) Serial.println(F("5.02 BAD_GATEWAY"));
             // break;
             // case SERVICE_UNAVAILABLE: if(printstate && en_print) Serial.println(F("5.03 SERVICE_UNAVAILABLE"));
@@ -994,22 +1023,24 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
 
         default : // Optional
             GETCONTENT = false;
+            break;
     }
 
-    if (printstate && en_print)
+    if (printstate && en_print) {
         Serial.print(F("   Msg_ID "));
-    if (printstate && en_print)
         Serial.println(resp_msgID);
+    }
 }
 
 void Magellan_BC95::printRspType(String Msgstr, unsigned int msgID) {
-    bool en_print = (post_process && resp_msgID == post_ID) || (get_process && resp_msgID == get_ID);
+    bool en_print = (post_process && (resp_msgID == post_ID)) || (get_process && (resp_msgID == get_ID));
 
-    if (Msgstr.indexOf(ack) != -1 || Msgstr.indexOf(acktk) != -1) {
-
-        if (printstate && en_print)
+    if ((Msgstr.indexOf(ack) != -1) || (Msgstr.indexOf(acktk) != -1)) {
+        if (printstate && en_print) {
             Serial.print(F("<< ACK: "));
-        if ((resp_msgID == get_ID || resp_msgID == post_ID) && !EMP) {
+        }
+
+        if (((resp_msgID == get_ID) || (resp_msgID == post_ID)) && !EMP) {
             ACK = true;
         }
 
@@ -1020,16 +1051,20 @@ void Magellan_BC95::printRspType(String Msgstr, unsigned int msgID) {
         // send_ACK=false;
         cnt_cmdgetrsp = 0;
     }
+
     if (Msgstr.indexOf(rst) != -1) {
-        if (printstate && en_print)
+        if (printstate && en_print) {
             Serial.print(F("<< RST: "));
+        }
         flag_rcv      = true;
         ACK           = false;
         cnt_cmdgetrsp = 0;
     }
+
     if (Msgstr.indexOf(non_con) != -1) {
-        if (printstate && en_print)
+        if (printstate && en_print) {
             Serial.print(F("<< Non-Con: "));
+        }
         flag_rcv      = true;
         ACK           = false;
         cnt_cmdgetrsp = 0;
@@ -1041,7 +1076,7 @@ void Magellan_BC95::printRspType(String Msgstr, unsigned int msgID) {
 */
 void Magellan_BC95::manageResponse(String rx) {
 
-    if (rx.indexOf(F("FF")) != -1 || rx.indexOf(F("ff")) != -1) {
+    if ((rx.indexOf(F("FF")) != -1) || (rx.indexOf(F("ff")) != -1)) {
         rspPrintOut(rx);
         data_resp = "";
     }
@@ -1051,7 +1086,7 @@ void Magellan_BC95::rspPrintOut(String rx) {
     printRspHeader(rx);
     // Serial.println(rx.length());
 
-    bool en_print = (post_process && resp_msgID == post_ID) || (get_process && resp_msgID == get_ID);
+    bool en_print = (post_process && (resp_msgID == post_ID)) || (get_process && (resp_msgID == get_ID));
     if (rx.length() > 720) {
         Serial.println(F("Payload length is over load. [Max 350 characters]"));
     }
@@ -1064,59 +1099,71 @@ void Magellan_BC95::rspPrintOut(String rx) {
 
         indexff = payload_rx.indexOf(F("FF"));
         if (payload_rx.indexOf(F("FFF")) != -1) {
-            data_payload = payload_rx.substring(indexff + 3, payload_rx.length());
+            data_payload = payload_rx.substring(indexff + 3U, payload_rx.length());
 
-            if (printstate && en_print)
+            if (printstate && en_print) {
                 Serial.print(F("   RSP:"));
+            }
             data_buffer = "";
-            for (unsigned int k = 2; k < data_payload.length() + 1; k += 2) {
-                char str = (char)strtol(&data_payload.substring(k - 2, k)[0], NULL, 16);
-                if (printstate && en_print)
+            for (unsigned int k = 2U; k < data_payload.length() + 1; k += 2U) {
+                char str = (char)strtol(&data_payload.substring(k - 2U, k)[0], NULL, 16);
+                if (printstate && en_print) {
                     Serial.print(str);
+                }
 
                 if (GETCONTENT or RCVRSP) {
-                    if (post_process && post_token == rsptoken || get_process && get_token == rsptoken) {
+                    if ((post_process && (post_token == rsptoken)) || (get_process && (get_token == rsptoken))) {
                         data_buffer += str;
                     }
                 }
             }
+
             if (GETCONTENT) {
                 rcvdata += data_buffer;
                 data_buffer = "";
                 getpayload  = true;
             }
-            if (printstate && en_print)
+
+            if (printstate && en_print) {
                 Serial.println(F(""));
+            }
         }
         else {
             Serial.println(data_payload);
-            data_payload = payload_rx.substring(indexff + 2, payload_rx.length());
-            if (printstate && en_print)
+            data_payload = payload_rx.substring(indexff + 2U, payload_rx.length());
+            if (printstate && en_print) {
                 Serial.print(F("   RSP:"));
+            }
             data_buffer = ""; // clr buffer
-            for (unsigned int k = 2; k < data_payload.length() + 1; k += 2) {
-                char str = (char)strtol(&data_payload.substring(k - 2, k)[0], NULL, 16);
-                if (printstate && en_print)
+            for (unsigned int k = 2U; k < data_payload.length() + 1U; k += 2U) {
+                char str = (char)strtol(&data_payload.substring(k - 2U, k)[0], NULL, 16);
+                if (printstate && en_print) {
                     Serial.print(str);
+                }
 
                 if (GETCONTENT or RCVRSP) {
-                    if (post_process && post_token == rsptoken || get_process && get_token == rsptoken) {
+                    if ((post_process && (post_token == rsptoken)) || (get_process && (get_token == rsptoken))) {
                         data_buffer += str;
                     }
                 }
             }
+
             if (GETCONTENT) {
                 rcvdata += data_buffer;
                 data_buffer = "";
                 getpayload  = true;
             }
-            if (printstate && en_print)
+
+            if (printstate && en_print) {
                 Serial.println(F(""));
+            }
         }
     }
+
     if (success) {
-        if (printstate && en_print)
+        if (printstate && en_print) {
             Serial.println(F("------------ End ------------"));
+        }
     }
 }
 

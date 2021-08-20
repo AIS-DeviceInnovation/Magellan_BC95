@@ -58,7 +58,7 @@ void AIS_BC95_API::begin(String addressI, String serverdesport) {
 }
 
 void AIS_BC95_API::pingIP(String IP) {
-    at_BC95.pingIP(IP);
+    (void) at_BC95.pingIP(IP);
 }
 
 /****************************************/
@@ -69,8 +69,9 @@ void AIS_BC95_API::sendMsgHEX(String address, String desport, String payload) {
     if (payload.length() > 1024) {
         Serial.println(F("Warning payload size exceed the limit. [Limit of HEX is 1024]"));
     }
-    else
+    else {
         send_msg(address, desport, payload.length() / 2, payload);
+    }
 }
 
 void AIS_BC95_API::sendMsgSTR(String address, String desport, String payload) {

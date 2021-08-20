@@ -52,18 +52,22 @@ void AT_BC95::setupModule(String address, String port) {
 #if defined(description)
     Serial.println(description);
 #endif
+
 #if defined(stop)
-    while (1)
-        ;
+    while (true) {
+        // pass
+    }
 #endif
 
-    if (address == "" || port == "")
+    if ((address == "") || (port == "")) {
         Serial.println(F("Warning, address or port is missing."));
+    }
     else {
         previous_check = millis();
 
         check_module_ready();
         if (!hw_connected) {
+            // pass
         }
 
         Serial.print(F(">>Reboot"));
@@ -85,17 +89,17 @@ void AT_BC95::setupModule(String address, String port) {
         Serial.print(F(">>IMEI   : "));
         Serial.println(getIMEI());
 
-        if (debug)
+        if (debug) {
             Serial.print(F(">>FW ver : "));
-        if (debug)
             Serial.println(getFirmwareVersion());
+        }
 
         delay(800);
         _serial_flush();
         Serial.print(F(">>Connecting "));
 
         if (attachNetwork()) {
-            if (address != "" && port != "") {
+            if ((address != "") && (port != "")) {
                 if (!createUDPSocket(address, port)) {
                     // Serial.println(">> Cannot create socket");
                 }
@@ -125,8 +129,8 @@ void AT_BC95::check_module_ready() {
     _Serial->println(F("AT"));
     delay(100);
     _Serial->println(F("AT"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("OK")) != -1) {
                 hw_connected = true;
@@ -135,7 +139,7 @@ void AT_BC95::check_module_ready() {
         }
         else {
             unsigned int current_check = millis();
-            if (current_check - previous_check > 5000) {
+            if ((current_check - previous_check) > 5000U) {
                 previous_check = current_check;
                 hw_connected   = false;
                 count++;
@@ -158,8 +162,8 @@ void AT_BC95::check_module_ready() {
 void AT_BC95::reboot_module() {
     _Serial->println(F("AT+NRB"));
 
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("OK")) != -1) {
                 Serial.println(F("OK"));
@@ -181,7 +185,7 @@ bool AT_BC95::attachNetwork() {
     bool status = false;
     if (!checkNetworkConnection()) {
         for (int i = 0; i < 60; i++) {
-            setPhoneFunction();
+            (void) setPhoneFunction();
             connectNetwork();
             delay(2000);
             if (checkNetworkConnection()) {
@@ -190,8 +194,9 @@ bool AT_BC95::attachNetwork() {
             }
         }
     }
-    else
+    else {
         status = true;
+    }
 
     _serial_flush();
     _Serial->flush();
@@ -205,7 +210,7 @@ bool AT_BC95::checkNetworkConnection() {
     _Serial->println(F("AT+CGATT?"));
     delay(800);
     for (int i = 0; i < 60; i++) {
-        if (_Serial->available()) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("+CGATT:1")) != -1) {
                 status = true;
@@ -219,6 +224,9 @@ bool AT_BC95::checkNetworkConnection() {
             else if (data_input.indexOf(F("ERROR")) != -1) {
                 break;
             }
+            else {
+                // pass
+            }
         }
     }
     data_input = "";
@@ -228,8 +236,8 @@ bool AT_BC95::checkNetworkConnection() {
 bool AT_BC95::setPhoneFunction() {
     bool status = false;
     _Serial->println(F("AT+CFUN=1"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("OK")) != -1) {
                 status = true;
@@ -239,7 +247,9 @@ bool AT_BC95::setPhoneFunction() {
                 status = false;
                 break;
             }
-            // Serial.print(F("."));
+            else {
+                // Serial.print(F("."));
+            }
         }
     }
     data_input = "";
@@ -251,13 +261,17 @@ void AT_BC95::connectNetwork() {
     _Serial->println(F("AT+CGATT=1"));
     delay(1000);
     for (int i = 0; i < 30; i++) {
-        if (_Serial->available()) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
-            if (data_input.indexOf(F("OK")) != -1)
+            if (data_input.indexOf(F("OK")) != -1) {
                 break;
-            else if (data_input.indexOf(F("ERROR")) != -1)
+            }
+            else if (data_input.indexOf(F("ERROR")) != -1) {
                 break;
-            Serial.print(F("."));
+            }
+            else {
+                Serial.print(F("."));
+            }
         }
     }
 }
@@ -270,8 +284,8 @@ bool AT_BC95::createUDPSocket(String address, String port) {
     _Serial->println(port + ",1");
 
     delay(500);
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("OK")) != -1) {
                 status = true;
@@ -281,6 +295,10 @@ bool AT_BC95::createUDPSocket(String address, String port) {
                 _Serial->print(F("AT+NSOCR=DGRAM,17,"));
                 _Serial->println(port + ",1");
             }
+            else {
+                // pass
+            }
+
             Serial.print(F("."));
         }
     }
@@ -291,14 +309,16 @@ bool AT_BC95::createUDPSocket(String address, String port) {
 // Close a UDP socket 0
 bool AT_BC95::closeUDPSocket() {
     _Serial->println(F("AT+NSOCL=0"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("OK")) != -1) {
                 break;
             }
         }
     }
+
+    return true;
 }
 
 // Ping IP
@@ -307,8 +327,8 @@ pingRESP AT_BC95::pingIP(String IP) {
     String   data = "";
     _Serial->println("AT+NPING=" + IP);
 
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("ERROR")) != -1) {
                 break;
@@ -319,6 +339,9 @@ pingRESP AT_BC95::pingIP(String IP) {
             }
             else if (data_input.indexOf(F("+NPINGERR")) != -1) {
                 break;
+            }
+            else {
+                // pass
             }
         }
     }
@@ -339,8 +362,9 @@ pingRESP AT_BC95::pingIP(String IP) {
     blankChk(pingr.addr);
     blankChk(pingr.ttl);
     blankChk(pingr.rtt);
-    if (data != "")
+    if (data != "") {
         Serial.println(">>Ping IP : " + pingr.addr + ", ttl= " + pingr.ttl + ", rtt= " + pingr.rtt);
+    }
 
     _serial_flush();
     data_input = "";
@@ -353,20 +377,22 @@ pingRESP AT_BC95::pingIP(String IP) {
 String AT_BC95::getIMSI() {
     String imsi = "";
     _Serial->println(F("AT+CIMI"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
-            if (data_input.indexOf(F("OK")) != -1 && imsi.indexOf(F("52003")) != -1)
+            if ((data_input.indexOf(F("OK")) != -1) && (imsi.indexOf(F("52003")) != -1)) {
                 break;
+            }
             else if (data_input.indexOf(F("ERROR: 524")) != -1) {
-                setPhoneFunction();
+                (void) setPhoneFunction();
                 _Serial->println(F("AT+CIMI"));
             }
             else if (data_input.indexOf(F("ERROR: 4")) != -1) {
                 _Serial->println(F("AT+CIMI"));
             }
-            else
+            else {
                 imsi += data_input;
+            }
         }
     }
     imsi.replace(F("OK"), "");
@@ -378,13 +404,15 @@ String AT_BC95::getIMSI() {
 String AT_BC95::getICCID() {
     String iccid = "";
     _Serial->println(F("AT+NCCID"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
-            if (data_input.indexOf(F("OK")) != -1)
+            if (data_input.indexOf(F("OK")) != -1) {
                 break;
-            else
+            }
+            else {
                 iccid += data_input;
+            }
         }
     }
     iccid.replace(F("OK"), "");
@@ -397,15 +425,19 @@ String AT_BC95::getICCID() {
 String AT_BC95::getIMEI() {
     String imei;
     _Serial->println(F("AT+CGSN=1"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("+CGSN:")) != -1) {
                 data_input.replace(F("+CGSN:"), "");
                 imei = data_input;
             }
-            else if (data_input.indexOf(F("OK")) != -1 && imei != "")
+            else if ((data_input.indexOf(F("OK")) != -1) && (imei != "")) {
                 break;
+            }
+            else {
+                // pass
+            }
         }
     }
     blankChk(imei);
@@ -416,19 +448,23 @@ String AT_BC95::getDeviceIP() {
     _serial_flush();
     String deviceIP;
     _Serial->println(F("AT+CGPADDR=0"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("+CGPADDR")) != -1) {
                 int index  = data_input.indexOf(F(":"));
                 int index2 = data_input.indexOf(F(","));
                 deviceIP   = data_input.substring(index2 + 1, data_input.length());
             }
-            else if (data_input.indexOf(F("OK")) != -1)
+            else if (data_input.indexOf(F("OK")) != -1) {
                 break;
+            }
             else if (data_input.indexOf(F("ERROR")) != -1) {
                 deviceIP = "N/A";
                 break;
+            }
+            else {
+                // pass
             }
         }
     }
@@ -448,8 +484,8 @@ String AT_BC95::getSignal() {
     do {
         _Serial->println(F("AT+CSQ"));
         delay(500);
-        while (1) {
-            if (_Serial->available()) {
+        while (true) {
+            if (_Serial->available() > 0) {
                 data_input = _Serial->readStringUntil('\n');
                 if (data_input.indexOf(F("OK")) != -1) {
                     break;
@@ -467,15 +503,18 @@ String AT_BC95::getSignal() {
                 }
             }
         }
-        if (rssi == -113 || rssi == 85)
+        if ((rssi == -113) || (rssi == 85)) {
             count++;
+        }
         delay(1000);
         data_input = "";
-    } while (rssi == -113 && count <= 10 || rssi == 85 && count <= 10);
-    if (rssi == -113 || rssi == 85) {
+    } while (((rssi == -113) && (count <= 10)) || ((rssi == 85) && (count <= 10)));
+
+    if ((rssi == -113) || (rssi == 85)) {
         data_csq = "-113";
         count    = 0;
     }
+
     return data_csq;
 }
 
@@ -483,8 +522,8 @@ String AT_BC95::getAPN() {
     String out = "";
     _Serial->println(F("AT+CGDCONT?"));
 
-    while (1) { //+CGDCONT:0,"IP","NB.DEVELOPER",,0,0,,,,,0
-        if (_Serial->available()) {
+    while (true) { //+CGDCONT:0,"IP","NB.DEVELOPER",,0,0,,,,,0
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("+CGDCONT:0")) != -1) {
                 int index  = 0;
@@ -495,9 +534,11 @@ String AT_BC95::getAPN() {
                 index  = data_input.indexOf(F(","), index2 + 1);
                 index2 = data_input.indexOf(F(","), index + 1);
                 out    = data_input.substring(index + 2, index2 - 1);
-                if (out == ",,")
+                if (out == ",,") {
                     out = "";
+                }
             }
+
             if (data_input.indexOf(F("OK")) != -1) {
                 break;
             }
@@ -512,13 +553,15 @@ String AT_BC95::getAPN() {
 String AT_BC95::getFirmwareVersion() {
     String fw = "";
     _Serial->println(F("AT+CGMR"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
-            if (data_input.indexOf(F("OK")) != -1)
+            if (data_input.indexOf(F("OK")) != -1) {
                 break;
-            else
+            }
+            else {
                 fw += data_input;
+            }
         }
     }
     fw.replace(F("OK"), "");
@@ -537,12 +580,12 @@ String AT_BC95::getNetworkStatus() {
     _serial_flush();
     delay(1000);
     _Serial->println(F("AT+CEREG?"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("+CEREG")) != -1) {
                 count++;
-                if (count < 10 && data_input.indexOf(F(",2")) != -1) {
+                if ((count < 10) && (data_input.indexOf(F(",2")) != -1)) {
                     _serial_flush();
                     _Serial->println(F("AT+CEREG?"));
                 }
@@ -552,16 +595,26 @@ String AT_BC95::getNetworkStatus() {
                     int index2 = data.indexOf(F(","));
                     int index3 = data.indexOf(F(","), index2 + 1);
                     out        = data.substring(index2 + 1, index2 + 2);
-                    if (out == F("1"))
+                    if (out == F("1")) {
                         out = F("Registered");
-                    else if (out == "0")
+                    }
+                    else if (out == "0") {
                         out = F("Not Registered");
-                    else if (out == "2")
+                    }
+                    else if (out == "2") {
                         out = F("Trying");
+                    }
+                    else {
+                        // pass
+                    }
                 }
             }
-            else if (data_input.indexOf(F("OK")) != -1)
+            else if (data_input.indexOf(F("OK")) != -1) {
                 break;
+            }
+            else {
+                // pass
+            }
         }
     }
     return (out);
@@ -571,8 +624,8 @@ String AT_BC95::getNetworkStatus() {
 radio AT_BC95::getRadioStat() {
     radio value;
     _Serial->println(F("AT+NUESTATS"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("OK")) != -1) {
                 break;
@@ -583,6 +636,7 @@ radio AT_BC95::getRadioStat() {
                     int stop_index  = data_input.indexOf(F("\n"));
                     value.pci       = data_input.substring(start_index + 1, stop_index);
                 }
+
                 if (data_input.indexOf(F("RSRQ")) != -1) {
                     int start_index = data_input.indexOf(F(":"));
                     int stop_index  = data_input.indexOf(F("\n"));
@@ -665,14 +719,14 @@ void AT_BC95::_Serial_println() {
 // Receive incoming message
 void AT_BC95::waitResponse(String& retdata, String server) {
     unsigned long current = millis();
-    if ((current - previous >= 500) && !(_Serial->available())) {
+    if (((current - previous) >= 500U) && (_Serial->available() == 0)) {
         _Serial->println(F("AT+NSORF=0,512"));
         previous = current;
     }
 
-    if (_Serial->available()) {
+    if (_Serial->available() > 0) {
         char data = (char)_Serial->read();
-        if (data == '\n' || data == '\r') {
+        if ((data == '\n') || (data == '\r')) {
             if (k > 2) {
                 end = true;
                 k   = 0;
@@ -683,6 +737,7 @@ void AT_BC95::waitResponse(String& retdata, String server) {
             data_input += data;
         }
     }
+
     if (end) {
         manageResponse(retdata, server);
         end = false;
@@ -705,14 +760,20 @@ void AT_BC95::manageResponse(String& retdata, String server) {
                 String left_buffer = "";
                 // pack data to char array
                 char buf[data_input.length() + 1];
-                memset(buf, '\0', data_input.length());
                 data_input.toCharArray(buf, sizeof(buf));
 
                 char* p = buf;
                 char* str;
-                int   i = 0;
-                int   j = 0;
-                while ((str = strtok_r(p, ",", &p)) != NULL) {
+                int   i;
+                int   j;
+
+                i = 0;
+                while (true) {
+                    str = strtok_r(p, ",", &p);
+                    if (str == NULL) {
+                        break;
+                    }
+
                     // delimiter is the comma
                     if (data_input.indexOf(F("OK")) != -1) {
                         j = 5;
@@ -720,12 +781,15 @@ void AT_BC95::manageResponse(String& retdata, String server) {
                     else {
                         j = 4;
                     }
+
                     if (i == j) {
                         retdata = str;
                     }
-                    if (i == j + 1) {
+
+                    if (i == (j + 1)) {
                         left_buffer = str;
                     }
+
                     i++;
                 }
 
@@ -754,25 +818,23 @@ void AT_BC95::at_getBuffer(String socket, String nBuffer) {
 String AT_BC95::toHEX(char* str) {
     String output = "";
     char*  hstr;
+    char   out[3];
+
     hstr = str;
-    char out[3];
-    memset(out, '\0', 2);
-    int  i    = 0;
-    bool flag = false;
-    while (*hstr) {
-        flag = itoa((int)*hstr, out, 16);
-        if (flag) {
-            output += out;
-        }
+    while (*hstr != '\0') {
+        (void) itoa((int)*hstr, out, 16);
+        output += out;
+
         hstr++;
     }
+
     return output;
 }
 
 // Flush unwanted message from serial
 void AT_BC95::_serial_flush() {
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
         }
         else {
@@ -786,8 +848,8 @@ void AT_BC95::_serial_flush() {
 dateTime AT_BC95::getClock(unsigned int timezone) {
     dateTime dateTime;
     _Serial->println(F("AT+CCLK?"));
-    while (1) {
-        if (_Serial->available()) {
+    while (true) {
+        if (_Serial->available() > 0) {
             data_input = _Serial->readStringUntil('\n');
             if (data_input.indexOf(F("+CCLK:")) != -1) {
                 byte index    = data_input.indexOf(F(":"));
@@ -801,7 +863,8 @@ dateTime AT_BC95::getClock(unsigned int timezone) {
             }
         }
     }
-    if (dateTime.time != "" && dateTime.date != "") {
+
+    if ((dateTime.time != "") && (dateTime.date != "")) {
         byte         index  = dateTime.date.indexOf(F("/"));
         byte         index2 = dateTime.date.indexOf(F("/"), index + 1);
         unsigned int yy     = ("20" + dateTime.date.substring(0, index)).toInt();
@@ -811,29 +874,33 @@ dateTime AT_BC95::getClock(unsigned int timezone) {
         index           = dateTime.time.indexOf(F(":"));
         unsigned int hr = dateTime.time.substring(0, index).toInt() + timezone;
 
-        if (hr >= 24) {
-            hr -= 24;
+        if (hr >= 24U) {
+            hr -= 24U;
             // date+1
-            dd += 1;
-            if (mm == 2) {
-                if ((yy % 4 == 0 && yy % 100 != 0 || yy % 400 == 0)) {
-                    if (dd > 29) {
-                        dd == 1;
-                        mm += 1;
+            dd += 1U;
+            if (mm == 2U) {
+                if ((((yy % 4U) == 0U) && ((yy % 100U) != 0U)) || ((yy % 400U) == 0U)) {
+                    if (dd > 29U) {
+                        dd = 1U;
+                        mm += 1U;
                     }
                 }
-                else if (dd > 28) {
-                    dd == 1;
-                    mm += 1;
+                else {
+                    if (dd > 28U) {
+                        dd = 1U;
+                        mm += 1U;
+                    }
                 }
             }
-            else if ((mm == 1 || mm == 3 || mm == 5 || mm == 7 || mm == 8 || mm == 10 || mm == 12) && dd > 31) {
-                dd == 1;
-                mm += 1;
+            else if (((mm == 1U) || (mm == 3U) || (mm == 5U) || (mm == 7U) || (mm == 8U) || (mm == 10U) || (mm == 12U)) && (dd > 31U)) {
+                dd = 1U;
+                mm += 1U;
             }
-            else if (dd > 30) {
-                dd == 1;
-                mm += 1;
+            else {
+                if (dd > 30U) {
+                    dd = 1U;
+                    mm += 1U;
+                }
             }
         }
         dateTime.time = String(hr) + dateTime.time.substring(index, dateTime.time.length());
