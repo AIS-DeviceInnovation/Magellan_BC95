@@ -30,9 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 AIS_BC95_API v1.1.2 NB-IoT.
 support Quectel BC95
 NB-IoT with AT command
- 
-Author: Device Innovation team     
-Create Date: 8 February 2021. 
+
+Author: Device Innovation team
+Create Date: 8 February 2021.
 Modified: 31 May 2021.
 
 Released for private usage.
@@ -44,36 +44,35 @@ Released for private usage.
 #include <Arduino.h>
 #include "AT_BC95.h"
 
-class AIS_BC95_API{
+class AIS_BC95_API {
 public:
-	AIS_BC95_API();
-	bool debug;
+    AIS_BC95_API();
+    bool debug;
 
-	void (*Event_debug)(char *data);	
+    void (*Event_debug)(char* data);
 
-	void begin(String serverdesport, String addressI);
+    void begin(String serverdesport, String addressI);
 
-	String getDeviceIP();
-	String getSignal();
-	String getIMSI();
-	String getIMEI();
-	String getICCID();
-	radio getRadioStat();
-	dateTime getClock(unsigned int timezone=7);
-	void pingIP(String IP);
-	// bool checkPSMmode();
+    String   getDeviceIP();
+    String   getSignal();
+    String   getIMSI();
+    String   getIMEI();
+    String   getICCID();
+    radio    getRadioStat();
+    dateTime getClock(unsigned int timezone = 7);
+    void     pingIP(String IP);
+    // bool checkPSMmode();
 
-	void sendMsgHEX(String address,String desport,String payload);
-	void sendMsgSTR(String address,String desport,String payload);	
+    void sendMsgHEX(String address, String desport, String payload);
+    void sendMsgSTR(String address, String desport, String payload);
 
-	void waitResponse(String &retdata,String server);
+    void waitResponse(String& retdata, String server);
 
 private:
-	void send_msg(String address,String desport,unsigned int len,String payload);
-		
+    void send_msg(String address, String desport, unsigned int len, String payload);
 
 protected:
-	 Stream *_Serial;	
+    Stream* _Serial;
 };
 
 #endif

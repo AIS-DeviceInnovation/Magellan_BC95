@@ -31,102 +31,102 @@ AT Command Dictionary for Quectel BC95 version 1.1.2
 support Quectel BC95
 NB-IoT with AT command
 
-Author: Device Innovation team  
-Create Date: 2 January 2020. 
+Author: Device Innovation team
+Create Date: 2 January 2020.
 Modified: 31 May 2021.
 */
 
 #include <Arduino.h>
 #include <Stream.h>
 
-struct pingRESP{
-	bool status;
-	String addr;
-	String ttl;
-	String rtt;
+struct pingRESP {
+    bool   status;
+    String addr;
+    String ttl;
+    String rtt;
 };
 
-struct signal{
-	String csq;
-	String rssi;
-	String ber;
+struct signal {
+    String csq;
+    String rssi;
+    String ber;
 };
 
-struct radio{
-	String pci="";
-	String rsrq="";
+struct radio {
+    String pci  = "";
+    String rsrq = "";
 };
 
-struct dateTime{
-	String date="";
-	String time="";
+struct dateTime {
+    String date = "";
+    String time = "";
 };
 
-typedef void (*MQTTClientCallback)(String &topic, String &payload);
-typedef void (*reponseCallback)(String &datax);
+typedef void (*MQTTClientCallback)(String& topic, String& payload);
+typedef void (*reponseCallback)(String& datax);
 
-class AT_BC95{
+class AT_BC95 {
 public:
-	AT_BC95();
-	bool debug;
-	//--------- Parameter config ---------------
-	const unsigned int msgLenMul=1;
-	//=========Initialization Module=======
-	void setupModule(String port="",String address="");
-	void check_module_ready();
-	void reboot_module();
-	pingRESP pingIP(String IP);
-	bool closeUDPSocket();
-	bool checkNetworkConnection();
-	bool attachNetwork();
-	
-	//==========Get Parameter Value=========
-	String getFirmwareVersion();
-	String getIMEI();
-	String getICCID();
-	String getIMSI();
-	String getDeviceIP();
-	String getSignal();
-	String getAPN();
-	String getNetworkStatus();
-	radio getRadioStat();
-	dateTime getClock(unsigned int timezone);
-	
-	// bool checkPSMmode();
-	//==========Data send/rec.===============
-	void waitResponse(String &retdata,String server);
-	void _Serial_print(String address,String port,unsigned int len);
-	void _Serial_print(String input);
-	void _Serial_print(unsigned int data);
-	void _Serial_print(char*);
-	void _Serial_println();
-	//===============Utility=================
-	void _serial_flush();
-	String toHEX(char *str);
-	void reset();
-    
+    AT_BC95();
+    bool debug;
+    //--------- Parameter config ---------------
+    const unsigned int msgLenMul = 1;
+    //=========Initialization Module=======
+    void     setupModule(String port = "", String address = "");
+    void     check_module_ready();
+    void     reboot_module();
+    pingRESP pingIP(String IP);
+    bool     closeUDPSocket();
+    bool     checkNetworkConnection();
+    bool     attachNetwork();
+
+    //==========Get Parameter Value=========
+    String   getFirmwareVersion();
+    String   getIMEI();
+    String   getICCID();
+    String   getIMSI();
+    String   getDeviceIP();
+    String   getSignal();
+    String   getAPN();
+    String   getNetworkStatus();
+    radio    getRadioStat();
+    dateTime getClock(unsigned int timezone);
+
+    // bool checkPSMmode();
+    //==========Data send/rec.===============
+    void waitResponse(String& retdata, String server);
+    void _Serial_print(String address, String port, unsigned int len);
+    void _Serial_print(String input);
+    void _Serial_print(unsigned int data);
+    void _Serial_print(char*);
+    void _Serial_println();
+    //===============Utility=================
+    void   _serial_flush();
+    String toHEX(char* str);
+    void   reset();
+
 private:
-	//==============Buffer====================
-	String data_input;
-	String data_buffer;
-	bool bc95=false;
-	//==============Flag======================
-	bool hw_connected=false;
-	bool end=false;
-	bool send_NSOMI=false;
-	//==============Parameter=================
-	unsigned int previous_check=0;
-	unsigned long previous=0;
-	//============Counter value===============
-	byte k=0;
-	//==============Function==================
-	bool setPhoneFunction();
-	void connectNetwork();
-	bool createUDPSocket(String address,String port);
-	void manageResponse(String &retdata,String server);
-	void at_getBuffer(String socket,String nBuffer);
-	void blankChk(String& val);
+    //==============Buffer====================
+    String data_input;
+    String data_buffer;
+    bool   bc95 = false;
+    //==============Flag======================
+    bool hw_connected = false;
+    bool end          = false;
+    bool send_NSOMI   = false;
+    //==============Parameter=================
+    unsigned int  previous_check = 0;
+    unsigned long previous       = 0;
+    //============Counter value===============
+    byte k = 0;
+    //==============Function==================
+    bool setPhoneFunction();
+    void connectNetwork();
+    bool createUDPSocket(String address, String port);
+    void manageResponse(String& retdata, String server);
+    void at_getBuffer(String socket, String nBuffer);
+    void blankChk(String& val);
 
 protected:
-	Stream *_Serial;	
+    Stream* _Serial;
 };

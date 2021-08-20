@@ -30,9 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 AIS_BC95_API v1.1.2 NB-IoT.
 support Quectel BC95
 NB-IoT with AT command
- 
-Author: Device Innovation team     
-Create Date: 8 February 2021. 
+
+Author: Device Innovation team
+Create Date: 8 February 2021.
 Modified: 31 May 2021.
 
 Released for private usage.
@@ -40,51 +40,53 @@ Released for private usage.
 #include "AIS_BC95_API.h"
 
 AT_BC95 at_BC95;
-void event_null(char *data){}
+void    event_null(char* data) {
+}
 
 /****************************************/
 /**          Initialization            **/
 /****************************************/
 
-AIS_BC95_API::AIS_BC95_API(){
-	Event_debug =  event_null;
+AIS_BC95_API::AIS_BC95_API() {
+    Event_debug = event_null;
 }
 
-void AIS_BC95_API:: begin(String addressI,String serverdesport){
-	Serial.println(F("----------------BEGIN----------------"));
-	at_BC95.debug = debug;
-	at_BC95.setupModule(addressI,serverdesport);
+void AIS_BC95_API::begin(String addressI, String serverdesport) {
+    Serial.println(F("----------------BEGIN----------------"));
+    at_BC95.debug = debug;
+    at_BC95.setupModule(addressI, serverdesport);
 }
 
-void AIS_BC95_API::pingIP(String IP){
-	at_BC95.pingIP(IP);
+void AIS_BC95_API::pingIP(String IP) {
+    at_BC95.pingIP(IP);
 }
 
 /****************************************/
 /**          Send UDP Message          **/
 /****************************************/
 
-void AIS_BC95_API::sendMsgHEX(String address,String desport,String payload){
-	if(payload.length()>1024){
-		Serial.println(F("Warning payload size exceed the limit. [Limit of HEX is 1024]"));
-	}
-	else send_msg(address,desport,payload.length()/2,payload);	
+void AIS_BC95_API::sendMsgHEX(String address, String desport, String payload) {
+    if (payload.length() > 1024) {
+        Serial.println(F("Warning payload size exceed the limit. [Limit of HEX is 1024]"));
+    }
+    else
+        send_msg(address, desport, payload.length() / 2, payload);
 }
 
-void AIS_BC95_API::sendMsgSTR(String address,String desport,String payload){
-	if(payload.length()>512){
-		Serial.println(F("Warning payload size exceed the limit. [Limit of String is 512]"));
-	}
-	else {
-		int x_len = payload.length();
-		char buf[x_len+2];
-		payload.toCharArray(buf,x_len+1);
-		send_msg(address,desport,payload.length(),at_BC95.toHEX(buf));
-	}
+void AIS_BC95_API::sendMsgSTR(String address, String desport, String payload) {
+    if (payload.length() > 512) {
+        Serial.println(F("Warning payload size exceed the limit. [Limit of String is 512]"));
+    }
+    else {
+        int  x_len = payload.length();
+        char buf[x_len + 2];
+        payload.toCharArray(buf, x_len + 1);
+        send_msg(address, desport, payload.length(), at_BC95.toHEX(buf));
+    }
 }
 
-void AIS_BC95_API::send_msg(String address,String desport,unsigned int len,String payload){
-	Serial.println(F("-------------------------------"));
+void AIS_BC95_API::send_msg(String address, String desport, unsigned int len, String payload) {
+    Serial.println(F("-------------------------------"));
     Serial.print(F("# Sending Data : "));
     Serial.println(payload);
     Serial.print(F("# IP : "));
@@ -92,7 +94,7 @@ void AIS_BC95_API::send_msg(String address,String desport,unsigned int len,Strin
     Serial.print(F("# Port : "));
     Serial.println(desport);
 
-    at_BC95._Serial_print(address,desport,len);
+    at_BC95._Serial_print(address, desport, len);
     at_BC95._Serial_print(payload);
     at_BC95._Serial_println();
 }
@@ -100,8 +102,8 @@ void AIS_BC95_API::send_msg(String address,String desport,unsigned int len,Strin
 /****************************************/
 /**         Receive UDP Message        **/
 /****************************************/
-void AIS_BC95_API::waitResponse(String &retdata,String server){
-  	at_BC95.waitResponse(retdata,server);  	
+void AIS_BC95_API::waitResponse(String& retdata, String server) {
+    at_BC95.waitResponse(retdata, server);
 }
 
 /****************************************/
@@ -111,43 +113,42 @@ void AIS_BC95_API::waitResponse(String &retdata,String server){
   - getSignal
         - Get NB-IoT signal
   - getDeviceIP
-  		- Get device ip after connected to network.
+        - Get device ip after connected to network.
   - getIMSI
-  		- Get IMSI of eSIM
+        - Get IMSI of eSIM
   - getICCID
-  		- Get eSIM serial number
+        - Get eSIM serial number
   - getIMEI
-  		- Get Device IMEI
+        - Get Device IMEI
 */
-String AIS_BC95_API::getSignal(){
-	return at_BC95.getSignal();
+String AIS_BC95_API::getSignal() {
+    return at_BC95.getSignal();
 }
 
-String AIS_BC95_API::getDeviceIP(){
-	return at_BC95.getDeviceIP();
+String AIS_BC95_API::getDeviceIP() {
+    return at_BC95.getDeviceIP();
 }
 
-String AIS_BC95_API::getIMSI(){
-	return at_BC95.getIMSI();
+String AIS_BC95_API::getIMSI() {
+    return at_BC95.getIMSI();
 }
 
-String AIS_BC95_API::getICCID(){
-	return at_BC95.getICCID();
+String AIS_BC95_API::getICCID() {
+    return at_BC95.getICCID();
 }
 
-String AIS_BC95_API::getIMEI(){
-	return at_BC95.getIMEI();
+String AIS_BC95_API::getIMEI() {
+    return at_BC95.getIMEI();
 }
 
-radio AIS_BC95_API::getRadioStat(){
-  return at_BC95.getRadioStat();
+radio AIS_BC95_API::getRadioStat() {
+    return at_BC95.getRadioStat();
 }
 
-dateTime AIS_BC95_API::getClock(unsigned int timezone){
-  return at_BC95.getClock(timezone);
+dateTime AIS_BC95_API::getClock(unsigned int timezone) {
+    return at_BC95.getClock(timezone);
 }
 
 // bool AIS_BC95_API::checkPSMmode(){
 //   return at_BC95.checkPSMmode();
 // }
-

@@ -27,102 +27,101 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Author: Device Innovation team     
-Create Date: 2 January 2020. 
+Author: Device Innovation team
+Create Date: 2 January 2020.
 Modified: 8 April 2021.
 
 Released for private usage
 */
 
-// Define the board used AltSoftSerial.h 
+// Define the board used AltSoftSerial.h
 #if defined(ARDUINO_AVR_UNO) || (ARDUINO_AVR_MEGA2560)
     #define ATLSOFTSERIAL 1
-	#include "AltSoftSerial.h"
-#else 
+    #include "AltSoftSerial.h"
+#else
     #define ATLSOFTSERIAL 0
-#endif 
+#endif
 
+// Hardware specification and configuration
+#if defined(__ARDUINO_X86__)
+    #define isHwReset  0
+    #define isATReset  1
+    #define isNetLight 0
 
-//Hardware specification and configuration
-#if defined( __ARDUINO_X86__)
-	#define isHwReset 0
-	#define isATReset 1
-	#define isNetLight 0
-
-	//Serial configuration
+    // Serial configuration
     HardwareSerial serialPort(1);
     #define serialConfig 0
-    #define buadrate 9600
-    #define description "PLEASE USE Hardware Serial"
+    #define buadrate     9600
+    #define description  "PLEASE USE Hardware Serial"
 
 #elif defined(ARDUINO_NUCLEO_L476RG) || (ARDUINO_STM32L4_NUCLEO) || (ARDUINO_ARCH_STM32) || (NUCLEO_L476RG)
-	
-	#define isHwReset 0
-	#define isATReset 1
-	#define hwResetPin 26
-	#define isNetLight 0
-	#define netLightPin 2
 
-    //Serial configuration
-	HardwareSerial serialPort(UART4); //NUCLEO_L053
-	#define buadrate 9600
-	#define description "PLEASE USE PIN RX=4 & TX=5"
+    #define isHwReset   0
+    #define isATReset   1
+    #define hwResetPin  26
+    #define isNetLight  0
+    #define netLightPin 2
+
+    // Serial configuration
+    HardwareSerial serialPort(UART4); // NUCLEO_L053
+    #define buadrate    9600
+    #define description "PLEASE USE PIN RX=4 & TX=5"
 
 #elif defined(ARDUINO_Node32s)
-	#define isHwReset 0
-	#define isATReset 1
-	#define isNetLight 0
+    #define isHwReset   0
+    #define isATReset   1
+    #define isNetLight  0
 
-	//Serial configuration
-    //Serial2 serialPort;
+    // Serial configuration
+    // Serial2 serialPort;
     HardwareSerial serialPort(2);
-    #define buadrate 9600
+    #define buadrate    9600
     #define description "PLEASE USE PIN RX=RX2 & TX=TX2 & 3V3=IOREF"
 
 #elif defined(ARDUINO_NodeMCU_32S)
- 	#define isHwReset 0
-	#define isATReset 1
-	#define isNetLight 0
+    #define isHwReset   0
+    #define isATReset   1
+    #define isNetLight  0
 
-	//Serial configuration
+    // Serial configuration
     HardwareSerial serialPort(2);
-    #define buadrate 9600
+    #define buadrate    9600
     #define description "PLEASE USE PIN RX=RX2 & TX=TX2 & 3V3=IOREF"
 
-#elif defined(ARDUINO_ESP32_DEV) ||(ARDUINO_ARCH_ESP32)
- 	#define isHwReset 1
- 	#define hwResetPin 26
-	#define isATReset 1
-	#define isNetLight 0
+#elif defined(ARDUINO_ESP32_DEV) || (ARDUINO_ARCH_ESP32)
+    #define isHwReset  1
+    #define hwResetPin 26
+    #define isATReset  1
+    #define isNetLight 0
 
-	#define serialConfig 1
-	#define rxPin 16
-	#define txPin 17
-	#define configParam SERIAL_8N1
+    #define serialConfig 1
+    #define rxPin        16
+    #define txPin        17
+    #define configParam  SERIAL_8N1
 
-	//Serial configuration
-	//HardwareSerial serialPort(2);
+    // Serial configuration
+    // HardwareSerial serialPort(2);
     HardwareSerial serialPort(1);
-    #define buadrate 9600
-    #define description "PLEASE USE PIN RX=RX2 & TX=TX2 & 3V3=IOREF"
+    #define buadrate     9600
+    #define description  "PLEASE USE PIN RX=RX2 & TX=TX2 & 3V3=IOREF"
 
 #elif defined(ARDUINO_AVR_UNO) || (ARDUINO_AVR_MEGA2560)
- 	#define isHwReset 0
-	#define isATReset 1
-	#define isNetLight 0
+    #define isHwReset    0
+    #define isATReset    1
+    #define isNetLight   0
 
-	//Serial configuration
+    // Serial configuration
     AltSoftSerial serialPort;
-    #define buadrate 9600
+    #define buadrate     9600
     #define serialConfig 0
-    #define description "PLEASE USE PIN RX=48 & TX=46"
-#else 
- 	#define isHwReset 0
-	#define isATReset 1
-	#define isNetLight 0
+    #define description  "PLEASE USE PIN RX=48 & TX=46"
+#else
+    #define isHwReset   0
+    #define isATReset   1
+    #define isNetLight  0
 
-	//Serial configuration
+    // Serial configuration
     AltSoftSerial serialPort;
-    #define buadrate 9600
+    #define buadrate    9600
     #define description "USE AltSoftSerial Serial"
 #endif
