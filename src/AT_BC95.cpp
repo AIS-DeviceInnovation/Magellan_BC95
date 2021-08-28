@@ -171,6 +171,7 @@ void AT_BC95::reboot_module() {
             }
             else {
                 if (data_input.indexOf(F("REBOOT_")) != -1) {
+                    // pass
                 }
                 else {
                     Serial.print(F("."));
@@ -199,7 +200,7 @@ bool AT_BC95::attachNetwork() {
     }
 
     _serial_flush();
-    _Serial->flush();
+
     return status;
 }
 
@@ -718,7 +719,9 @@ void AT_BC95::_Serial_println() {
 /****************************************/
 // Receive incoming message
 void AT_BC95::waitResponse(String& retdata, String server) {
-    unsigned long current = millis();
+    unsigned long current;
+
+    current = millis();
     if (((current - previous) >= 500U) && (_Serial->available() == 0)) {
         _Serial->println(F("AT+NSORF=0,512"));
         previous = current;
@@ -731,7 +734,9 @@ void AT_BC95::waitResponse(String& retdata, String server) {
                 end = true;
                 k   = 0;
             }
-            k++;
+            else {
+                k++;
+            }
         }
         else {
             data_input += data;
@@ -746,59 +751,51 @@ void AT_BC95::waitResponse(String& retdata, String server) {
 
 // Split data from incoming message
 void AT_BC95::manageResponse(String& retdata, String server) {
+    if (data_input.indexOf(F("+NSONMI:")) != -1) {
+        at_getBuffer("0", "512");
+        data_input = F("");
+        send_NSOMI = true;
+    }
+    else {
+        if (data_input.indexOf(server) != -1) { // serverIP
+            String left_buffer = "";
 
-    if (end) {
-        if (data_input.indexOf(F("+NSONMI:")) != -1) {
-            at_getBuffer("0", "512");
-            data_input = F("");
-            send_NSOMI = true;
-            end        = false;
-        }
-        else {
-            end = false;
-            if (data_input.indexOf(server) != -1) { // serverIP
-                String left_buffer = "";
-                // pack data to char array
-                char buf[data_input.length() + 1];
-                data_input.toCharArray(buf, sizeof(buf));
+            char* p = const_cast<char*>(data_input.c_str());
+            char* str;
+            int   i;
+            int   j;
 
-                char* p = buf;
-                char* str;
-                int   i;
-                int   j;
-
-                i = 0;
-                while (true) {
-                    str = strtok_r(p, ",", &p);
-                    if (str == NULL) {
-                        break;
-                    }
-
-                    // delimiter is the comma
-                    if (data_input.indexOf(F("OK")) != -1) {
-                        j = 5;
-                    }
-                    else {
-                        j = 4;
-                    }
-
-                    if (i == j) {
-                        retdata = str;
-                    }
-
-                    if (i == (j + 1)) {
-                        left_buffer = str;
-                    }
-
-                    i++;
+            i = 0;
+            while (true) {
+                str = strtok_r(p, ",", &p);
+                if (str == NULL) {
+                    break;
                 }
 
-                if (left_buffer != "0") {
-                    at_getBuffer("0", "512");
+                // delimiter is the comma
+                if (data_input.indexOf(F("OK")) != -1) {
+                    j = 5;
                 }
-                send_NSOMI = false;
-                data_input = F("");
+                else {
+                    j = 4;
+                }
+
+                if (i == j) {
+                    retdata = str;
+                }
+
+                if (i == (j + 1)) {
+                    left_buffer = str;
+                }
+
+                i++;
             }
+
+            if (left_buffer != "0") {
+                at_getBuffer("0", "512");
+            }
+            send_NSOMI = false;
+            data_input = F("");
         }
     }
 }
@@ -815,9 +812,9 @@ void AT_BC95::at_getBuffer(String socket, String nBuffer) {
 /**          Utility                   **/
 /****************************************/
 // char * to hex
-String AT_BC95::toHEX(char* str) {
+String AT_BC95::toHEX(char const* str) const {
     String output = "";
-    char*  hstr;
+    char const* hstr;
     char   out[3];
 
     hstr = str;
@@ -916,5 +913,8 @@ dateTime AT_BC95::getClock(unsigned int timezone) {
 
 void AT_BC95::reset() {
     delay(500);
+
+    #if defined(ARDUINO_ARCH_AVR)
     __asm__ __volatile__("jmp 0x0000");
+    #endif
 }

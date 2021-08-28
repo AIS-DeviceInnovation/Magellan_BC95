@@ -79,10 +79,7 @@ void AIS_BC95_API::sendMsgSTR(String address, String desport, String payload) {
         Serial.println(F("Warning payload size exceed the limit. [Limit of String is 512]"));
     }
     else {
-        int  x_len = payload.length();
-        char buf[x_len + 2];
-        payload.toCharArray(buf, x_len + 1);
-        send_msg(address, desport, payload.length(), at_BC95.toHEX(buf));
+        send_msg(address, desport, payload.length(), at_BC95.toHEX(payload.c_str()));
     }
 }
 

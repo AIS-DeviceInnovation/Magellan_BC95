@@ -36,8 +36,10 @@ Create Date: 2 January 2020.
 Modified: 31 May 2021.
 */
 
+#ifndef AT_BC95_H
+#define AT_BC95_H
+
 #include <Arduino.h>
-#include <Stream.h>
 
 struct pingRESP {
     bool   status;
@@ -102,7 +104,7 @@ public:
     void _Serial_println();
     //===============Utility=================
     void   _serial_flush();
-    String toHEX(char* str);
+    String toHEX(char const* str) const;
     void   reset();
 
 private:
@@ -130,3 +132,5 @@ private:
 protected:
     Stream* _Serial;
 };
+
+#endif

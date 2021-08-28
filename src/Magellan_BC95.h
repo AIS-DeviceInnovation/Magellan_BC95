@@ -121,7 +121,7 @@ public:
     String getControl(String Resource, unsigned int qos = 0);
 
 private:
-    unsigned int Msg_ID = 0;
+    uint16_t Msg_ID;
     //------------------------- Buffer --------------------------
     String data_input = "";
     String rcvdata    = "";
@@ -156,31 +156,33 @@ private:
     bool token_error_report = true;
     bool token_error_config = true;
     //------------- message token and ID --------------
-    unsigned int resp_msgID = 0;
-    unsigned int post_ID    = 0;
-    unsigned int post_token = 0;
-    unsigned int get_ID     = 0;
-    unsigned int get_token  = 0;
+    uint16_t resp_msgID;
+    uint16_t post_ID;
+    uint16_t post_token;
+    uint16_t get_ID;
+    uint16_t get_token;
     //-------------------- timer ----------------------
-    unsigned int previous_send          = 0;
-    unsigned int previous_get           = 0;
-    unsigned int token                  = 0;
-    unsigned int rsptoken               = 0;
-    byte         count_post_timeout     = 0;
-    byte         count_get_timeout      = 0;
-    byte         count_error_token_post = 0;
-    byte         count_error_token_get  = 0;
+    unsigned long previous_send;
+    unsigned long previous_get;
+    uint16_t token;
+    uint16_t rsptoken;
+    byte     count_post_timeout     = 0;
+    byte     count_get_timeout      = 0;
+    byte     count_error_token_post = 0;
+    byte     count_error_token_get  = 0;
 
     //------------- Diagnostic & Report ---------------
     byte cnt_cmdgetrsp = 0;
     //---------------------- Function -------------------
-    void printHEX(char* str);
-    void printMsgID(unsigned int messageID);
+    void printHEX(char const* str) const;
+    void printMsgID(uint16_t messageID);
     void printRspHeader(String Msgstr);
     void printRspType(String Msgstr, unsigned int msgID);
     void printPathlen(unsigned int path_len, String init_str);
     void printUriPath(String uripath, String optnum);
     void printErrCode(String errCode);
+
+    void utlHex2Cstr(uint8_t cstr[], uint8_t const hex[], uint16_t len);
 
     //---------------------- Response Management --------
     void manageResponse(String rx);

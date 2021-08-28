@@ -95,7 +95,7 @@ String Magellan_BC95::thingsRegister() {
     coapoption[2].optlen    = stropt[2].length();
     coapoption[2].optionnum = 11;
 
-    if ((imsi.indexOf(F("52003")) != -1) and (imsi.length() > 15)) {
+    if ((imsi.indexOf(F("52003")) != -1) && (imsi.length() > 15)) {
         int indexst = imsi.indexOf(F("52003"));
         imsi        = imsi.substring(indexst, 16);
     }
@@ -328,8 +328,8 @@ bool Magellan_BC95::begin() {
 /*************************************************/
 /**Message management and CoAP message construct**/
 /*************************************************/
-void Magellan_BC95::printHEX(char* str) {
-    char* hstr;
+void Magellan_BC95::printHEX(char const* str) const {
+    char const* hstr;
     char  out[3];
 
     hstr = str;
@@ -345,42 +345,17 @@ void Magellan_BC95::printHEX(char* str) {
     }
 }
 
-void Magellan_BC95::printMsgID(unsigned int messageID) {
-    char Msg_ID[3];
+void Magellan_BC95::printMsgID(uint16_t messageID) {
+    uint8_t hex[2];
+    uint8_t cstr[5];
 
-    utoa(highByte(messageID), Msg_ID, 16);
-    if (highByte(messageID) < 16) {
-        atBC95._Serial_print(F("0"));
-        atBC95._Serial_print(Msg_ID);
+    hex[0] = highByte(messageID);
+    hex[1] = lowByte(messageID);
 
-        if (debug) {
-            Serial.print(F("0"));
-            Serial.print(Msg_ID);
-        }
-    }
-    else {
-        atBC95._Serial_print(Msg_ID);
-        if (debug) {
-            Serial.print(Msg_ID);
-        }
-    }
-
-    utoa(lowByte(messageID), Msg_ID, 16);
-    if (lowByte(messageID) < 16) {
-        if (debug) {
-            Serial.print(F("0"));
-        }
-        atBC95._Serial_print(F("0"));
-        if (debug) {
-            Serial.print(Msg_ID);
-        }
-        atBC95._Serial_print(Msg_ID);
-    }
-    else {
-        atBC95._Serial_print(Msg_ID);
-        if (debug) {
-            Serial.print(Msg_ID);
-        }
+    utlHex2Cstr(&cstr[0], &hex[0], 2U);
+    atBC95._Serial_print((char*)&cstr[0]);
+    if (debug) {
+        Serial.print((char*)&cstr[0]);
     }
 }
 
@@ -464,11 +439,7 @@ void Magellan_BC95::printUriPath(String uripath, String optnum) {
 
     if (uripathlen > 0U) {
         printPathlen(uripathlen, optnum);
-
-        char data[uripath.length() + 1];
-        uripath.toCharArray(data, uripath.length() + 1);
-
-        printHEX(data);
+        printHEX(uripath.c_str());
     }
 }
 
@@ -479,9 +450,6 @@ void Magellan_BC95::msgPost(String payload, option* coapOption, unsigned int tot
 
     option* stroption2;
     stroption2 = coapOption;
-
-    char data[payload.length() + 1];
-    payload.toCharArray(data, payload.length() + 1);
 
     unsigned int headerLen       = 2;
     unsigned int tokenLen        = 2;
@@ -580,7 +548,7 @@ void Magellan_BC95::msgPost(String payload, option* coapOption, unsigned int tot
             if (debug) {
                 Serial.print(F("ff"));
             }
-            printHEX(data);
+            printHEX(payload.c_str());
         }
 
         atBC95._Serial_println();
@@ -600,8 +568,6 @@ void Magellan_BC95::msgGet(option* coapOption, unsigned int totaloption, String 
 
     String Resource = "";
 
-    char data[Resource.length() + 1];
-    Resource.toCharArray(data, Resource.length() + 1);
     GETCONTENT = false;
     ACK        = false;
 
@@ -706,6 +672,7 @@ void Magellan_BC95::msgGet(option* coapOption, unsigned int totaloption, String 
     }
     sendget = true;
 }
+
 /****************************************/
 /**      CoAP Sequence management      **/
 /****************************************/
@@ -720,14 +687,14 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
         ACK           = false;
         success       = false;
 
-        token      = random(0, 32767); // random message token
+        token      = (uint16_t)random(0, 32767);                // random message token
         post_token = token;
 
         if (debug) {
             Serial.println(F("Load new payload"));
         }
 
-        Msg_ID  = random(0, 65535); // random message ID
+        Msg_ID  = (uint16_t)random(0, 65535);                   // random message ID
         post_ID = Msg_ID;
 
         for (byte i = 0; i <= maxretrans; ++i) {
@@ -783,7 +750,7 @@ String Magellan_BC95::postData(String payload, option* coapOption, unsigned int 
     printErrCode(rcvdata);
 
     if (rcvdata.indexOf(F("20000")) != -1) {
-        count_error_token_post = true;
+        count_error_token_post = 1;
     }
     else {
         token_error_report = false;
@@ -806,9 +773,9 @@ String Magellan_BC95::getData(option* coapoption, unsigned int totaloption, Stri
     String server  = serverIP;
     if (!post_process && en_get) {
         previous_get = millis();
-        Msg_ID       = random(0, 65535); // random message ID
+        Msg_ID       = (uint16_t)random(0, 65535);    // random message ID
         get_ID       = Msg_ID;
-        token        = random(0, 32767);
+        token        = (uint16_t)random(0, 32767);
         get_token    = token;
         success      = false;
         for (byte i = 0; i <= maxretrans; ++i) {
@@ -817,7 +784,7 @@ String Magellan_BC95::getData(option* coapoption, unsigned int totaloption, Stri
             msgGet(coapoption, totaloption, Proxy);
 
             while (true) {
-                unsigned int current_time = millis();
+                unsigned long current_time = millis();
 
                 if (((current_time - previous_get) > timeout[i]) || success || ACK || NOTFOUND) {
                     previous_get = current_time;
@@ -877,12 +844,12 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
         Serial.println(Msgstr);
     }
 
-    resp_msgID = (unsigned int)strtol(&Msgstr.substring(4, 8)[0], NULL, 16);
+    resp_msgID = (uint16_t)strtol(&Msgstr.substring(4, 8)[0], nullptr, 16);
     printRspType(Msgstr.substring(0, 2), resp_msgID);
 
     bool en_print = (post_process && (resp_msgID == post_ID)) || (get_process && (resp_msgID == get_ID));
 
-    switch ((int)strtol(&Msgstr.substring(2, 4)[0], NULL, 16)) {
+    switch ((int)strtol(&Msgstr.substring(2, 4)[0], nullptr, 16)) {
         case EMPTY :
             EMP = true;
             Msgstr.remove(0, 8);
@@ -895,7 +862,7 @@ void Magellan_BC95::printRspHeader(String Msgstr) {
             RCVRSP     = true;
 
             if ((Msgstr.length() / 2U) > 4U) {
-                rsptoken = (unsigned int)strtol(&Msgstr.substring(8, 12)[0], NULL, 16);
+                rsptoken = (uint16_t)strtol(&Msgstr.substring(8, 12)[0], NULL, 16);
                 if (post_process && (post_token == rsptoken)) {
                     if (debug) {
                         Serial.println(F("match token"));
@@ -1111,7 +1078,7 @@ void Magellan_BC95::rspPrintOut(String rx) {
                     Serial.print(str);
                 }
 
-                if (GETCONTENT or RCVRSP) {
+                if (GETCONTENT || RCVRSP) {
                     if ((post_process && (post_token == rsptoken)) || (get_process && (get_token == rsptoken))) {
                         data_buffer += str;
                     }
@@ -1141,7 +1108,7 @@ void Magellan_BC95::rspPrintOut(String rx) {
                     Serial.print(str);
                 }
 
-                if (GETCONTENT or RCVRSP) {
+                if (GETCONTENT || RCVRSP) {
                     if ((post_process && (post_token == rsptoken)) || (get_process && (get_token == rsptoken))) {
                         data_buffer += str;
                     }
@@ -1209,4 +1176,28 @@ void Magellan_BC95::printErrCode(String errcode) {
     //     default:
     //         break;
     //   }
+}
+
+/// @brief Convert Hexadecimal to C string
+/// @param[out] cstr string array of converted result (should be [(hex[] x 2) + 1U] for null terminated)
+/// @param[in]  hex hexadecimal array that want to convert
+/// @param[in]  len length of hex[] array
+/// @details Example from 0x112233AA -> "112233AA"
+void Magellan_BC95::utlHex2Cstr(uint8_t cstr[], uint8_t const hex[], uint16_t len) {
+    static uint8_t const m_hex2str_tbl[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                                            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    uint_fast16_t indx_2;
+    uint_fast8_t  tmp8_1;
+
+    indx_2 = 0U;
+    for (uint_fast16_t indx_1 = 0U; indx_1 < len; indx_1++) {
+        tmp8_1 = hex[indx_1];
+
+        cstr[indx_2]      = (m_hex2str_tbl[(tmp8_1 >> 4U) & 0x0FU]);
+        cstr[indx_2 + 1U] = (m_hex2str_tbl[ tmp8_1        & 0x0FU]);
+
+        indx_2 += 2U;
+    }
+
+    cstr[indx_2] = '\0';                    // Trailing with null terminate
 }
