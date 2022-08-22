@@ -27,8 +27,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Magellan_BC95 v1.1.2 NB-IoT Magellan Platform .
-support Quectel BC95
+Magellan_BC95 v2.0.0 NB-IoT Magellan Platform .
+support Quectel BC95-B8 & BC95-G
 NB-IoT with AT command
 
 Library/SDK has developed with CoAP protocol. 
@@ -42,7 +42,7 @@ and supported only Magellan IoT Platform
  
 Author: Device Innovation team     
 Create Date: 8 February 2021. 
-Modified: 31 May 2021.
+Modified: 14 June 2021.
 
 Released for private usage.
 */

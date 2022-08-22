@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AT Command Dictionary for Quectel BC95 version 1.1.2
-support Quectel BC95
+AT Command Dictionary for Quectel BC95 & BC95-G version 2.0.0
+support Quectel BC95-B8 & BC95-G
 NB-IoT with AT command
 
 Author: Device Innovation team  
 Create Date: 8 February 2021. 
-Modified: 31 May 2021.
+Modified: 14 June 2021.
 */
 #include "AT_BC95.h"  
 #include "board.h"
@@ -84,6 +84,10 @@ void AT_BC95::setupModule(String address,String port){
 
     if(debug)Serial.print(F(">>FW ver : "));
     if(debug)Serial.println(getFirmwareVersion());
+
+    if(debug)Serial.print(F(">>Module BC95 : "));
+    bc95 = isBC95();
+    if(debug)Serial.println(bc95);
 
     delay(800);
     _serial_flush();
@@ -259,8 +263,14 @@ void AT_BC95::connectNetwork(){
 bool AT_BC95::createUDPSocket(String address,String port){
   bool status=false;
 
-  _Serial->print(F("AT+NSOCR=DGRAM,17,"));
-  _Serial->println(port+",1");
+  if(bc95){
+    _Serial->print(F("AT+NSOCR=DGRAM,17,"));
+    _Serial->println(port+",1");
+
+  }
+  else{
+    _Serial->println(F("AT+NSOCR=DGRAM,17,0"));
+  }  
 
   delay(500);
   while(1){
@@ -270,8 +280,13 @@ bool AT_BC95::createUDPSocket(String address,String port){
         status=true;
         break;
       }else if(data_input.indexOf(F("+CME ERROR: 4"))!=-1){
-          _Serial->print(F("AT+NSOCR=DGRAM,17,"));
-          _Serial->println(port+",1");
+          if(bc95){
+            _Serial->print(F("AT+NSOCR=DGRAM,17,"));
+            _Serial->println(port+",1");
+          }
+          else{
+            _Serial->println(F("AT+NSOCR=DGRAM,17,0"));
+          } 
       }
       Serial.print(F("."));
     }
@@ -607,7 +622,12 @@ void AT_BC95::blankChk(String& val){
 // Send AT command to send UDP message
 void AT_BC95::_Serial_print(String address,String port,unsigned int len){
   
-  _Serial->print(F("AT+NSOST=0"));
+   if(bc95){
+    _Serial->print(F("AT+NSOST=0"));
+  }
+  else{
+    _Serial->print(F("AT+NSOST=1"));
+  }
   _Serial->print(F(","));
   _Serial->print(address);
   _Serial->print(F(","));
@@ -645,7 +665,12 @@ void AT_BC95::_Serial_println(){
 void AT_BC95::waitResponse(String &retdata,String server){ 
   unsigned long current=millis();
   if((current-previous>=500) && !(_Serial->available())){
-    _Serial->println(F("AT+NSORF=0,512")); 
+    if(bc95) {
+      _Serial->println(F("AT+NSORF=0,512"));
+    }
+    else{
+      _Serial->println(F("AT+NSORF=1,512"));
+    } 
     previous=current;
   }
 
@@ -830,4 +855,19 @@ dateTime AT_BC95::getClock(unsigned int timezone){
 void AT_BC95::reset(){
   delay(500);
   __asm__ __volatile__ ("jmp 0x0000");
+}
+
+bool AT_BC95::isBC95(){
+  _Serial->println(F("AT+CGMM"));
+  while(1){
+    if(_Serial->available()){
+      data_input=_Serial->readStringUntil('\n');
+      if(data_input.indexOf(F("OK"))!=-1) break;
+      else{
+        if(data_input.indexOf(F("BC95GJB-02-STD"))!=-1) return false;
+        else if(data_input.indexOf(F("BC95HB-02-STD_900"))!=-1) return true;
+      }
+    }
+  }
+  return false;
 }
