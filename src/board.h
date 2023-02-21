@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Device Innovation team     
 Create Date: 2 January 2020. 
-Modified: 8 April 2021.
+Modified: 9 November 2022.
 
 Released for private usage
 */
@@ -107,8 +107,9 @@ Released for private usage
     #define description "PLEASE USE PIN RX=RX2 & TX=TX2 & 3V3=IOREF"
 
 #elif defined(ARDUINO_AVR_UNO) || (ARDUINO_AVR_MEGA2560)
- 	#define isHwReset 0
+ 	#define isHwReset 1
 	#define isATReset 1
+  #define hwResetPin 4
 	#define isNetLight 0
 
 	//Serial configuration
