@@ -27,7 +27,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Magellan_BC95 v2.1.0 NB-IoT Magellan Platform .
+Magellan_BC95 v2.1.1 NB-IoT Magellan Platform .
 support Quectel BC95 & BC95-G
 NB-IoT with AT command
 
@@ -42,7 +42,7 @@ and supported only Magellan IoT Platform
 
 Author: Device Innovation team
 Create Date: 3 February 2020.
-Modified: 17 February 2023.
+Modified: 24 February 2023.
 
 Released for private usage.
 */
@@ -294,7 +294,7 @@ bool Magellan_BC95::begin() {
   token_error_report = true;
   token_error_config = true;
   Serial.println();
-  Serial.println(F("               AIS NB-IoT Magellan_BC95 V2.1.0"));
+  Serial.println(F("               AIS NB-IoT Magellan_BC95 V2.1.1"));
 
   atBC95.setupModule(_HOST, _PORT);
 
