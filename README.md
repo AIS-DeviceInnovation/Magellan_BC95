@@ -1,4 +1,4 @@
-![Library Version](https://img.shields.io/badge/Version-2.1.0-green)
+![Library Version](https://img.shields.io/badge/Version-2.1.1-green)
 
 # AIS DEVIO NB-SHIELD I & DEVIO NB-SHIELD I Plus Library 
 This library only supports the [DEVIO NB-SHIELD I & DEVIO NB-SHIELD I Plus](https://aisplayground.ais.co.th/marketplace/products/64DkezcxuRk).

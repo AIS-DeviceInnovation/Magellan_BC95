@@ -27,13 +27,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-AT Command Dictionary for Quectel BC95 version 2.1.0
+AT Command Dictionary for Quectel BC95 version 2.1.1
 support Quectel BC95 & BC95-G
 NB-IoT with AT command
 
 Author: Device Innovation team
 Create Date: 2 January 2020.
-Modified: 17 February 2023.
+Modified: 24 February 2023.
 */
 #ifndef AT_BC95_h
 #define AT_BC95_h
