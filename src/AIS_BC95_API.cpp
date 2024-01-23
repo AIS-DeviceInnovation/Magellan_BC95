@@ -165,16 +165,16 @@ bool AIS_BC95_API::isMQTTConnected() {
 /*
   - setupMQTT
       - setup module to use MQTT include serverIP, port, clientID, username, password, keep alive
-  interval, will messege.
+  interval, will message.
   - connectMQTT
       - setup module to use MQTT include serverIP, port, clientID, username, password, keep alive
-  interval, will messege. This function doesn't have default value as 0.
+  interval, will message. This function doesn't have default value as 0.
   - newMQTT
       - connect device to MQTT server and port
   - sendMQTTconnectionPacket
       - connect device to MQTT with configuration value
   - willConfig
-      - create payload for will messege
+      - create payload for will message
   - publish
       - publish payload within  1000 characters.
   - subscribe

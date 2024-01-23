@@ -15,8 +15,8 @@ String       topic       = "";               // Your topic     < 128 characters
 String       payload     = "HelloWorld!";    // Your payload   < 500 characters
 String       username    = "";               // username for mqtt server, username <= 100 characters
 String       password    = "";               // password for mqtt server, password <= 100 characters
-unsigned int subQoS      = 0;                // subQoS      : unsinged int : 0, 1, 2
-unsigned int pubQoS      = 0;                // pubQoS      : unsinged int : 0, 1, 2
+unsigned int subQoS      = 0;                // subQoS      : unsigned int : 0, 1, 2
+unsigned int pubQoS      = 0;                // pubQoS      : unsigned int : 0, 1, 2
 unsigned int pubRetained = 0;                // pubRetained : unsigned int : 0, 1
 
 const long    interval       = 20000;    // time in millisecond

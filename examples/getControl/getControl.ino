@@ -33,7 +33,7 @@ void setup()
 void loop() 
 {
   /*
-    Example get swich data from Magellan IoT platform
+    Example get switch data from Magellan IoT platform
   */
   sw_state=magel.getControl("sw"); //Get switch data from Magellan IoT platform
   
