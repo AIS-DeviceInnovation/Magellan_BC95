@@ -494,7 +494,7 @@ void Magellan_BC95::msgPost(String payload, option *coapOption, unsigned int tot
     unsigned int buff_len = headerLen + tokenLen + msgIdLen +
                             payloadMakerLen;    // header(2) + token(2) + msgID(2) +payloadmaker(2)
 
-    buff_len += payload.length();    // add payload lenght
+    buff_len += payload.length();    // add payload length
 
     if (payload.length() > 0) {
       buff_len += 1;
@@ -700,7 +700,7 @@ void Magellan_BC95::msgGet(option *coapOption, unsigned int totaloption, String 
 /****************************************/
 String Magellan_BC95::postData(String payload, option *coapOption, unsigned int totaloption) {
   unsigned int timeout[5] = {12000, 14000, 18000, 26000, 42000};
-  rcvdata                 = "";    // recieve response from server variable
+  rcvdata                 = "";    // receive response from server variable
   data_buffer             = "";
   String server           = _HOST;
   if (!get_process && en_post) {

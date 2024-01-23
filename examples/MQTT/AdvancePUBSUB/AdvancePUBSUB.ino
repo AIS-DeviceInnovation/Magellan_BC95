@@ -16,19 +16,19 @@ String       payload      = "HelloWorld!";    // Your payload   < 500 characters
 String       username     = "";    // username for mqtt server, username <= 100 characters
 String       password     = "";    // password for mqtt server, password <= 100 characters
 int          keepalive    = 900;    // keepalive time (second)
-int          version      = 3;     // MQTT veresion 3(3.1), 4(3.1.1)
+int          version      = 3;     // MQTT version 3(3.1), 4(3.1.1)
 int          cleansession = 0;     // cleanssion  : 0, 1
-unsigned int subQoS       = 0;     // subQoS      : unsinged int : 0, 1, 2
-unsigned int pubQoS       = 0;     // pubQoS      : unsinged int : 0, 1, 2
+unsigned int subQoS       = 0;     // subQoS      : unsigned int : 0, 1, 2
+unsigned int pubQoS       = 0;     // pubQoS      : unsigned int : 0, 1, 2
 unsigned int pubRetained =
     0;    // pubRetained : unsigned int : 0  not retain the message, 1  retain the message
 
 // The Will message defines the content of the message that is published to the will topic if the
 // client is unexpectedly disconnected
 int          willflag = 0;    // willflag    : 0, 1
-unsigned int will_qos = 0;    // will_qos    : unsinged int : 0, 1, 2
+unsigned int will_qos = 0;    // will_qos    : unsigned int : 0, 1, 2
 unsigned int will_retain =
-    0;    // will_retain : unsinged int : 0  not retain the message, 1  retain the message
+    0;    // will_retain : unsigned int : 0  not retain the message, 1  retain the message
 String will_topic = "";    // Your Will topic string
 String will_msg   = "";    // Your Will message. It can be a zero-length message.
 String willOption = nb.willConfig(will_topic, will_qos, will_retain, will_msg);
